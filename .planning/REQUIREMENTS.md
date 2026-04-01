@@ -50,7 +50,7 @@
 ### Setup
 
 - [ ] **SETUP-01**: `mouse-research install` handles Node.js newspapers-com-scraper dependency installation in `~/.mouse-research/`
-- [ ] **SETUP-02**: `pip install mouse-research` or `pip install -e .` installs the tool with all Python dependencies
+- [x] **SETUP-02**: `pip install mouse-research` or `pip install -e .` installs the tool with all Python dependencies
 
 ## v2 Requirements
 
@@ -114,7 +114,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GRAPH-04 | Phase 4 | Pending |
 | GRAPH-05 | Phase 4 | Pending |
 | SETUP-01 | Phase 1 | Pending |
-| SETUP-02 | Phase 1 | Pending |
+| SETUP-02 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 32 total
