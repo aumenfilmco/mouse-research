@@ -27,7 +27,10 @@ def doctor():
 @app.command()
 def login(domain: str = typer.Argument(..., help="Domain to authenticate (e.g. newspapers.com)")):
     """Open browser for manual login and save cookies."""
-    console.print(f"[yellow]login command not yet implemented — run after plan 01-05[/yellow]")
+    from mouse_research.cookies import interactive_login
+    success = interactive_login(domain, console)
+    if not success:
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":
