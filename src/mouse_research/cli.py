@@ -9,13 +9,19 @@ console = Console()
 @app.command()
 def install():
     """Install Node.js dependencies (newspapers-com-scraper)."""
-    console.print("[yellow]install command not yet implemented — run after plan 01-03[/yellow]")
+    from mouse_research.installer import install_node_deps
+    success = install_node_deps(console)
+    if not success:
+        raise typer.Exit(code=1)
 
 
 @app.command()
 def doctor():
     """Validate all external dependencies and report status."""
-    console.print("[yellow]doctor command not yet implemented — run after plan 01-04[/yellow]")
+    from mouse_research.doctor import run_doctor
+    all_pass = run_doctor()
+    if not all_pass:
+        raise typer.Exit(code=1)
 
 
 @app.command()
