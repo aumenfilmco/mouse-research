@@ -7,7 +7,7 @@
 
 ### Foundation
 
-- [ ] **FOUND-01**: `mouse-research doctor` validates all external dependencies (Python, Node.js, Ollama, GLM-OCR, Playwright, Tesseract, vault path, disk space) and reports status
+- [x] **FOUND-01**: `mouse-research doctor` validates all external dependencies (Python, Node.js, Ollama, GLM-OCR, Playwright, Tesseract, vault path, disk space) and reports status
 - [x] **FOUND-02**: YAML config file at `~/.mouse-research/config.yaml` controls vault paths, OCR settings, browser settings, rate limits, and source domain mapping
 - [x] **FOUND-03**: Structured logging to `~/.mouse-research/logs/YYYY-MM-DD.log` with INFO/DEBUG levels and `--verbose` flag
 - [x] **FOUND-04**: Failed URLs logged to `~/.mouse-research/logs/failures.jsonl` for retry
@@ -49,7 +49,7 @@
 
 ### Setup
 
-- [ ] **SETUP-01**: `mouse-research install` handles Node.js newspapers-com-scraper dependency installation in `~/.mouse-research/`
+- [x] **SETUP-01**: `mouse-research install` handles Node.js newspapers-com-scraper dependency installation in `~/.mouse-research/`
 - [x] **SETUP-02**: `pip install mouse-research` or `pip install -e .` installs the tool with all Python dependencies
 
 ## v2 Requirements
@@ -83,7 +83,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FOUND-01 | Phase 1 | Pending |
+| FOUND-01 | Phase 1 | Complete |
 | FOUND-02 | Phase 1 | Complete |
 | FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 1 | Complete |
@@ -113,7 +113,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | GRAPH-03 | Phase 4 | Pending |
 | GRAPH-04 | Phase 4 | Pending |
 | GRAPH-05 | Phase 4 | Pending |
-| SETUP-01 | Phase 1 | Pending |
+| SETUP-01 | Phase 1 | Complete |
 | SETUP-02 | Phase 1 | Complete |
 
 **Coverage:**
