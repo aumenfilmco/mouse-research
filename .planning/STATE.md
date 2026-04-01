@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-foundation-validation/01-01-PLAN.md
-last_updated: "2026-04-01T23:08:36.779Z"
+stopped_at: Completed 01-foundation-validation/01-02-PLAN.md
+last_updated: "2026-04-01T23:14:53.166Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 01 (foundation-validation) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-04-01
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-foundation-validation P01 | 4min | 2 tasks | 5 files |
+| Phase 01-foundation-validation P02 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,7 @@ Recent decisions affecting current work:
 - — Phase 1 not started
 - [Phase 01-foundation-validation]: httpx pinned >=0.27.0 (not 0.28.1) — RESEARCH.md rated 0.28.1 MEDIUM confidence; safe lower bound used
 - [Phase 01-foundation-validation]: Virtual environment (.venv/) required — macOS Python 3.14 is externally-managed (PEP 668); all plans must use .venv/bin/ prefix
+- [Phase 01-foundation-validation]: YAML override test uses TestConfig subclass: pydantic-settings bakes yaml_file at class definition time; patching CONFIG_PATH post-import is ineffective
 
 ### Pending Todos
 
@@ -77,6 +79,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-01T23:08:36.777Z
-Stopped at: Completed 01-foundation-validation/01-01-PLAN.md
+Last session: 2026-04-01T23:14:53.164Z
+Stopped at: Completed 01-foundation-validation/01-02-PLAN.md
 Resume file: None

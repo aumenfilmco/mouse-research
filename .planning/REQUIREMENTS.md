@@ -8,9 +8,9 @@
 ### Foundation
 
 - [ ] **FOUND-01**: `mouse-research doctor` validates all external dependencies (Python, Node.js, Ollama, GLM-OCR, Playwright, Tesseract, vault path, disk space) and reports status
-- [ ] **FOUND-02**: YAML config file at `~/.mouse-research/config.yaml` controls vault paths, OCR settings, browser settings, rate limits, and source domain mapping
-- [ ] **FOUND-03**: Structured logging to `~/.mouse-research/logs/YYYY-MM-DD.log` with INFO/DEBUG levels and `--verbose` flag
-- [ ] **FOUND-04**: Failed URLs logged to `~/.mouse-research/logs/failures.jsonl` for retry
+- [x] **FOUND-02**: YAML config file at `~/.mouse-research/config.yaml` controls vault paths, OCR settings, browser settings, rate limits, and source domain mapping
+- [x] **FOUND-03**: Structured logging to `~/.mouse-research/logs/YYYY-MM-DD.log` with INFO/DEBUG levels and `--verbose` flag
+- [x] **FOUND-04**: Failed URLs logged to `~/.mouse-research/logs/failures.jsonl` for retry
 - [ ] **FOUND-05**: `mouse-research login <domain>` opens visible browser for manual login and saves cookies to `~/.mouse-research/cookies/<domain>.json`
 - [ ] **FOUND-06**: Saved cookies auto-loaded for all Playwright sessions with pre-flight auth check detecting expired sessions
 
@@ -84,9 +84,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | FOUND-01 | Phase 1 | Pending |
-| FOUND-02 | Phase 1 | Pending |
-| FOUND-03 | Phase 1 | Pending |
-| FOUND-04 | Phase 1 | Pending |
+| FOUND-02 | Phase 1 | Complete |
+| FOUND-03 | Phase 1 | Complete |
+| FOUND-04 | Phase 1 | Complete |
 | FOUND-05 | Phase 1 | Pending |
 | FOUND-06 | Phase 1 | Pending |
 | ARCH-01 | Phase 2 | Pending |
