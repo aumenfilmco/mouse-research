@@ -11,8 +11,8 @@
 - [x] **FOUND-02**: YAML config file at `~/.mouse-research/config.yaml` controls vault paths, OCR settings, browser settings, rate limits, and source domain mapping
 - [x] **FOUND-03**: Structured logging to `~/.mouse-research/logs/YYYY-MM-DD.log` with INFO/DEBUG levels and `--verbose` flag
 - [x] **FOUND-04**: Failed URLs logged to `~/.mouse-research/logs/failures.jsonl` for retry
-- [ ] **FOUND-05**: `mouse-research login <domain>` opens visible browser for manual login and saves cookies to `~/.mouse-research/cookies/<domain>.json`
-- [ ] **FOUND-06**: Saved cookies auto-loaded for all Playwright sessions with pre-flight auth check detecting expired sessions
+- [x] **FOUND-05**: `mouse-research login <domain>` opens visible browser for manual login and saves cookies to `~/.mouse-research/cookies/<domain>.json`
+- [x] **FOUND-06**: Saved cookies auto-loaded for all Playwright sessions with pre-flight auth check detecting expired sessions
 
 ### Archiving
 
@@ -87,8 +87,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-02 | Phase 1 | Complete |
 | FOUND-03 | Phase 1 | Complete |
 | FOUND-04 | Phase 1 | Complete |
-| FOUND-05 | Phase 1 | Pending |
-| FOUND-06 | Phase 1 | Pending |
+| FOUND-05 | Phase 1 | Complete |
+| FOUND-06 | Phase 1 | Complete |
 | ARCH-01 | Phase 2 | Pending |
 | ARCH-02 | Phase 2 | Pending |
 | ARCH-03 | Phase 2 | Pending |
