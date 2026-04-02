@@ -75,7 +75,10 @@ Plans:
   1. Archiving an article that references a person creates or updates `Research/People/<name>.md` with a backlink to the article — existing content in the People note is never overwritten
   2. Archiving an article creates or updates `Research/Sources/<publication>.md` with a backlink entry under `## Articles` — append-only, never overwrites
   3. After any archive run, `Research/Articles/_index.md` reflects all articles in the vault sorted reverse-chronological and grouped by person with article counts
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 04-01-PLAN.md — graph.py module: People notes, Source notes, index regeneration with TDD tests
+- [ ] 04-02-PLAN.md — Wire graph into archiver pipeline + standalone graph CLI command
 
 ## Progress
 
@@ -87,4 +90,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation + Validation | 2/5 | In Progress|  |
 | 2. Single-URL Archive Pipeline | 5/7 | In Progress|  |
 | 3. Bulk Search + Batch Archive | 1/2 | In Progress|  |
-| 4. Research Graph + Hardening | 0/? | Not started | - |
+| 4. Research Graph + Hardening | 0/2 | Not started | - |
