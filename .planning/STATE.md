@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-single-url-archive-pipeline/02-00-PLAN.md
-last_updated: "2026-04-02T13:06:44.679Z"
+stopped_at: Completed 02-single-url-archive-pipeline/02-01-PLAN.md
+last_updated: "2026-04-02T13:09:55.073Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 12
-  completed_plans: 6
+  completed_plans: 7
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 02 (single-url-archive-pipeline) — EXECUTING
-Plan: 2 of 7
+Plan: 3 of 7
 Status: Ready to execute
 Last activity: 2026-04-02
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation-validation P03 | 4min | 3 tasks | 3 files |
 | Phase 01-foundation-validation P04 | 2min | 2 tasks | 2 files |
 | Phase 02-single-url-archive-pipeline P00 | 1 | 2 tasks | 2 files |
+| Phase 02-single-url-archive-pipeline P01 | 70s | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation-validation]: storage_state() over launch_persistent_context(): Playwright bug #36139 causes session cookies not to persist with launch_persistent_context(); storage_state() save/load is the correct approach
 - [Phase 02-single-url-archive-pipeline]: lxml-html-clean placed after trafilatura in pyproject.toml — both newspaper4k and trafilatura require it
 - [Phase 02-single-url-archive-pipeline]: types.py fields match RESEARCH.md Pattern 1 exactly — no additional fields to preserve downstream contract stability
+- [Phase 02-single-url-archive-pipeline]: channel='chrome' hardcoded unconditionally in fetcher.py — not configurable — Phase 1 validated required on macOS
+- [Phase 02-single-url-archive-pipeline]: fetcher.py uses list for nonlocal mutation inside Playwright response closure; httpx downloads image with cookies from storage_state JSON
 
 ### Pending Todos
 
@@ -86,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T13:06:44.677Z
-Stopped at: Completed 02-single-url-archive-pipeline/02-00-PLAN.md
+Last session: 2026-04-02T13:09:55.071Z
+Stopped at: Completed 02-single-url-archive-pipeline/02-01-PLAN.md
 Resume file: None

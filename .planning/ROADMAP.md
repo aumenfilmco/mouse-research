@@ -44,7 +44,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 7 plans
 Plans:
 - [x] 02-00-PLAN.md — Add lxml-html-clean dependency + define pipeline dataclass contracts
-- [ ] 02-01-PLAN.md — Playwright fetcher: page fetch, screenshot, Newspapers.com image interception + crop
+- [x] 02-01-PLAN.md — Playwright fetcher: page fetch, screenshot, Newspapers.com image interception + crop
 - [ ] 02-02-PLAN.md — Text extractor (newspaper4k/trafilatura) + OpenCV preprocessor pipeline
 - [ ] 02-03-PLAN.md — OCR layer: GLM-OCR primary, Tesseract fallback, OCR queue
 - [ ] 02-04-PLAN.md — Obsidian writer: folder creation, note format, metadata.json, duplicate detection
