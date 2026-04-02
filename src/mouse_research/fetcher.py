@@ -13,7 +13,6 @@ import re
 from pathlib import Path
 from urllib.parse import urlparse
 
-import httpx
 from PIL import Image
 from playwright.sync_api import sync_playwright
 
@@ -39,52 +38,41 @@ def _extract_domain(url: str) -> str:
     return urlparse(url).netloc.lstrip("www.")
 
 
-def _download_page_image(
+def _download_page_image_via_browser(
     image_url: str,
     output_path: Path,
-    storage_path: str | None,
+    context: object,  # Playwright BrowserContext
 ) -> bool:
-    """Download a page image from img.newspapers.com via httpx.
+    """Download a page image using the authenticated browser context.
+
+    Uses Playwright (not httpx) so the browser's session cookies are sent
+    automatically — avoids 403 from img.newspapers.com's Cloudflare protection.
 
     Returns True on success, False on failure.
     """
-    cookies: dict[str, str] = {}
-
-    # Load cookies from storage_state JSON if available
-    if storage_path:
-        import json
-
-        try:
-            with open(storage_path) as f:
-                state = json.load(f)
-            for cookie in state.get("cookies", []):
-                cookies[cookie["name"]] = cookie["value"]
-        except Exception:
-            pass  # Proceed without cookies — image may still be accessible
-
     try:
-        headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/120.0.0.0 Safari/537.36"
-            ),
-            "Referer": "https://www.newspapers.com/",
-        }
-        resp = httpx.get(
-            image_url,
-            follow_redirects=True,
-            timeout=30,
-            headers=headers,
-            cookies=cookies,
-        )
-        if resp.status_code == 200:
-            output_path.write_bytes(resp.content)
+        img_page = context.new_page()
+        response = img_page.goto(image_url, wait_until="load", timeout=30000)
+        if response and response.ok:
+            output_path.write_bytes(response.body())
+            img_page.close()
             return True
+        img_page.close()
     except Exception:
         pass
-
     return False
+
+
+def _detect_cloudflare(html: str) -> bool:
+    """Check if the page content is a Cloudflare challenge, not the real article."""
+    indicators = [
+        "Verifying you are human",
+        "Performing security verification",
+        "security service to protect against",
+        "cf-browser-verification",
+        "challenge-platform",
+    ]
+    return any(indicator.lower() in html.lower() for indicator in indicators)
 
 
 def _construct_fallback_image_url(article_url: str) -> str | None:
@@ -233,11 +221,48 @@ def fetch_url(url: str, config: AppConfig, output_dir: Path) -> FetchResult:
 
                 page.on("response", capture_image)
 
-            page.goto(url, wait_until="networkidle", timeout=30000)
+            page.goto(url, wait_until="domcontentloaded", timeout=60000)
+            page.wait_for_timeout(3000)
 
-            # Capture screenshot and HTML
+            # Check for Cloudflare challenge
+            try:
+                html = page.content()
+            except Exception:
+                html = ""
+
+            if _detect_cloudflare(html):
+                if config.browser.headless:
+                    browser.close()
+                    raise FetchError(
+                        url,
+                        "Cloudflare challenge detected in headless mode. "
+                        "Set browser.headless=false in config or run: mouse-research login newspapers.com"
+                    )
+                # Non-headless: user can see the Chrome window — wait for them
+                from rich.console import Console as _Con
+                _Con().print(
+                    "[yellow]Cloudflare challenge detected in the Chrome window. "
+                    "Please solve it (click 'Verify you are human'), then wait...[/yellow]"
+                )
+                # Poll until Cloudflare resolves (up to 60s)
+                for _attempt in range(12):
+                    page.wait_for_timeout(5000)
+                    try:
+                        html = page.content()
+                    except Exception:
+                        continue
+                    if not _detect_cloudflare(html):
+                        break
+                else:
+                    browser.close()
+                    raise FetchError(
+                        url,
+                        "Cloudflare challenge not resolved after 60s. "
+                        "Run: mouse-research login newspapers.com"
+                    )
+
+            # Capture screenshot and HTML (after Cloudflare check passes)
             page.screenshot(path=str(screenshot_path), full_page=True)
-            html = page.content()
 
             # Newspapers.com-specific: download page image and crop article region
             if is_ncm:
@@ -251,10 +276,11 @@ def fetch_url(url: str, config: AppConfig, output_dir: Path) -> FetchResult:
                     image_url_to_download = _construct_fallback_image_url(url)
 
                 if image_url_to_download:
-                    success = _download_page_image(
+                    # Use browser context (not httpx) to carry session cookies
+                    success = _download_page_image_via_browser(
                         image_url_to_download,
                         page_jpg_path,
-                        storage,
+                        context,
                     )
                     if success:
                         page_image_path = page_jpg_path
@@ -264,6 +290,10 @@ def fetch_url(url: str, config: AppConfig, output_dir: Path) -> FetchResult:
                             page,
                             article_jpg_path,
                         )
+
+            # Refresh cookies on successful authenticated load
+            if storage:
+                context.storage_state(path=storage)
 
             browser.close()
 

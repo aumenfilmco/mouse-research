@@ -13,7 +13,7 @@ COOKIE_DIR = Path.home() / ".mouse-research" / "cookies"
 
 # Domain to login URL mapping
 LOGIN_URLS = {
-    "newspapers.com": "https://www.newspapers.com/sign-in/",
+    "newspapers.com": "https://www.newspapers.com/signin/?next_url=/?",
     "lancasteronline.com": "https://lancasteronline.com/users/login/",
     "ydr.com": "https://www.ydr.com/",
     "eveningsun.com": "https://www.eveningsun.com/",
@@ -53,7 +53,7 @@ def interactive_login(domain: str, console: Console | None = None) -> bool:
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=False,
-            executable_path=config.browser.chrome_executable,
+            channel="chrome",
         )
         context = browser.new_context()
         page = context.new_page()
