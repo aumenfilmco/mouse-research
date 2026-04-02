@@ -245,5 +245,216 @@ def ocr(
     console.print(f"Engine: {ocr_result.engine}")
 
 
+def _display_results(results: list, excluded_count: int) -> None:
+    """Display search results in a Rich Table."""
+    from rich.table import Table
+
+    table = Table(title=f"Search Results ({len(results)} found)")
+    table.add_column("#", style="bold", width=4)
+    table.add_column("Newspaper", min_width=20)
+    table.add_column("Date", width=12)
+    table.add_column("Location", min_width=15)
+    table.add_column("URL", overflow="fold", max_width=40)
+    table.add_column("Matches", width=8, justify="right")
+
+    for r in results:
+        # Extract URL snippet after /image/ if present, else truncate to 40 chars
+        url = r.url
+        if "/image/" in url:
+            snippet = "..." + url[url.index("/image/"):]
+            if len(snippet) > 40:
+                snippet = snippet[:37] + "..."
+        else:
+            snippet = url[:40] + "..." if len(url) > 40 else url
+
+        table.add_row(
+            str(r.number),
+            r.title,
+            r.date,
+            r.location,
+            snippet,
+            str(r.keyword_matches),
+        )
+
+    console.print(table)
+    if excluded_count > 0:
+        console.print(f"[dim]{excluded_count} result(s) excluded (already in vault)[/dim]")
+
+
+def _batch_archive_with_progress(
+    urls_and_titles: list[tuple[str, str]],
+    config,
+    persons: list,
+    tags: list,
+) -> None:
+    """Archive a list of (url, title) pairs with a Rich Progress bar and rate limiting."""
+    import time
+    from mouse_research.archiver import archive_url
+    from rich.progress import Progress, SpinnerColumn, BarColumn, TaskProgressColumn, TextColumn
+
+    archived = 0
+    failed = 0
+
+    try:
+        with Progress(
+            SpinnerColumn(),
+            BarColumn(),
+            TaskProgressColumn(),
+            TextColumn("[dim]{task.description}"),
+            console=console,
+            transient=False,
+        ) as progress:
+            task = progress.add_task("Archiving", total=len(urls_and_titles))
+            for i, (url, title) in enumerate(urls_and_titles):
+                if i > 0:
+                    time.sleep(config.rate_limit_seconds)
+                desc = title[:50] + "..." if len(title) > 50 else title
+                progress.update(task, description=desc)
+                result = archive_url(url, config, person=persons, tags=tags)
+                if result.error:
+                    failed += 1
+                else:
+                    archived += 1
+                progress.advance(task)
+    except KeyboardInterrupt:
+        remaining = len(urls_and_titles) - archived - failed
+        console.print(f"\n[yellow]Interrupted.[/yellow] Partial results:")
+        console.print(f"  Archived: {archived}  Failed: {failed}  Remaining: {remaining}")
+        raise typer.Exit(code=130)
+
+    console.print(f"[bold]Done:[/bold] {archived} archived, {failed} failed")
+    if failed > 0:
+        console.print("[yellow]Failed URLs logged to:[/yellow] ~/.mouse-research/logs/failures.jsonl")
+
+
+@app.command()
+def search(
+    query: str = typer.Argument(..., help="Search term (e.g. 'Dave McCollum wrestling')"),
+    years: Optional[str] = typer.Option(None, "--years", help="Year or range: 1982 or 1975-1985"),
+    location: Optional[str] = typer.Option(None, "--location", help="State name or region code (e.g. 'Pennsylvania' or 'us-pa')"),
+    auto_archive: bool = typer.Option(False, "--auto-archive", help="Archive all results without interactive review"),
+    person: Optional[list[str]] = typer.Option(None, "--person", "-p", help="Person name(s) to associate"),
+    tag: Optional[list[str]] = typer.Option(None, "--tag", "-t", help="Tag(s) to apply"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable debug logging"),
+):
+    """Search Newspapers.com and archive selected results.
+
+    Examples:
+        mouse-research search 'Dave McCollum'
+        mouse-research search 'McCollum' --years 1975-1985 --location Pennsylvania
+        mouse-research search 'McCollum' --auto-archive --person 'Dave McCollum'
+    """
+    from mouse_research.config import get_config
+    from mouse_research.logger import setup_logging
+    from mouse_research.searcher import search_and_filter, parse_selection, ScraperError
+
+    setup_logging(verbose=verbose)
+    config = get_config()
+    persons = list(person) if person else []
+    tags = list(tag) if tag else ["newspaper", "archive"]
+
+    try:
+        results, excluded_count = search_and_filter(query, years, location, config)
+    except ScraperError as e:
+        console.print(f"[red]Search failed:[/red] {e}")
+        raise typer.Exit(code=1)
+
+    if not results:
+        console.print(f"[yellow]No results found for '{query}'.[/yellow]")
+        console.print("[dim]Try broadening your search — remove --years or --location filters.[/dim]")
+        return
+
+    _display_results(results, excluded_count)
+
+    if auto_archive:
+        urls_and_titles = [(r.url, r.title) for r in results]
+        _batch_archive_with_progress(urls_and_titles, config, persons, tags)
+    else:
+        from rich.prompt import Prompt
+        selection_str = Prompt.ask("Enter selection (e.g. 1,3,5-12,all)")
+        try:
+            indices = parse_selection(selection_str, len(results))
+        except ValueError as e:
+            console.print(f"[red]Invalid selection:[/red] {e}")
+            raise typer.Exit(code=1)
+        selected = [(results[i].url, results[i].title) for i in indices]
+        console.print(f"Archiving [bold]{len(selected)}[/bold] articles...")
+        _batch_archive_with_progress(selected, config, persons, tags)
+
+
+@app.command(name="retry-failures")
+def retry_failures(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable debug logging"),
+):
+    """Reprocess failed URLs from failures.jsonl."""
+    import json
+    import time
+    from mouse_research.config import get_config
+    from mouse_research.logger import setup_logging, FAILURE_LOG
+    from mouse_research.archiver import archive_url
+    from rich.progress import Progress, SpinnerColumn, BarColumn, TaskProgressColumn, TextColumn
+
+    setup_logging(verbose=verbose)
+    config = get_config()
+
+    if not FAILURE_LOG.exists():
+        console.print("[yellow]No failures log found.[/yellow]")
+        return
+
+    records = []
+    seen: set[str] = set()
+    for line in FAILURE_LOG.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        url = record.get("url", "")
+        if url and url not in seen:
+            seen.add(url)
+            records.append(record)
+
+    if not records:
+        console.print("[green]No failures to retry.[/green]")
+        return
+
+    console.print(f"Retrying [bold]{len(records)}[/bold] failed URL(s)...")
+
+    still_failed: list[dict] = []
+    archived = 0
+
+    with Progress(
+        SpinnerColumn(),
+        BarColumn(),
+        TaskProgressColumn(),
+        TextColumn("[dim]{task.description}"),
+        console=console,
+        transient=False,
+    ) as progress:
+        task = progress.add_task("Retrying", total=len(records))
+        for i, record in enumerate(records):
+            if i > 0:
+                time.sleep(config.rate_limit_seconds)
+            desc = record.get("reason", "")[:50]
+            progress.update(task, description=desc)
+            result = archive_url(record["url"], config)
+            if result.skipped:
+                archived += 1
+            elif result.error or not result.success:
+                still_failed.append(record)
+            else:
+                archived += 1
+            progress.advance(task)
+
+    FAILURE_LOG.write_text(
+        "\n".join(json.dumps(r) for r in still_failed) + ("\n" if still_failed else ""),
+        encoding="utf-8",
+    )
+
+    console.print(f"[bold]Done:[/bold] {archived} resolved, {len(still_failed)} still failed")
+
+
 if __name__ == "__main__":
     app()
