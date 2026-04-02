@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 04-research-graph-hardening/04-01-PLAN.md
-last_updated: "2026-04-02T15:49:04.542Z"
+status: verifying
+stopped_at: Completed 04-research-graph-hardening/04-02-PLAN.md
+last_updated: "2026-04-02T15:51:51.569Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 16
-  completed_plans: 15
+  completed_plans: 16
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 
 Phase: 04 (research-graph-hardening) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-02
 
 Progress: [░░░░░░░░░░] 0%
@@ -65,6 +65,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03-bulk-search-batch-archive P01 | 4min | 1 tasks | 2 files |
 | Phase 03-bulk-search-batch-archive P02 | 1min | 1 tasks | 1 files |
 | Phase 04-research-graph-hardening P01 | 2min | 1 tasks | 2 files |
+| Phase 04-research-graph-hardening P02 | 37s | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -97,6 +98,8 @@ Recent decisions affecting current work:
 - [Phase 03-bulk-search-batch-archive]: result.skipped counts as resolved in retry-failures (already in vault = no longer actionable failure)
 - [Phase 04-research-graph-hardening]: Person names normalized to title case via .strip().title() before filename construction — prevents duplicate notes from casing differences
 - [Phase 04-research-graph-hardening]: Idempotency detected by '[[slug|' substring in ## Articles section — slug is stable; title/date may vary
+- [Phase 04-research-graph-hardening]: Graph hook uses lazy import inside try/except — consistent with Phase 2 lazy import pattern in archive and ocr commands
+- [Phase 04-research-graph-hardening]: graph CLI command calls only regenerate_index (not People/Source updates) — People/Source notes require ArticleRecord; index is the only standalone rebuild operation
 
 ### Pending Todos
 
@@ -110,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T15:49:04.540Z
-Stopped at: Completed 04-research-graph-hardening/04-01-PLAN.md
+Last session: 2026-04-02T15:51:51.568Z
+Stopped at: Completed 04-research-graph-hardening/04-02-PLAN.md
 Resume file: None

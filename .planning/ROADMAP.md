@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Foundation + Validation** - Install the tool, validate all high-risk dependencies, establish config/cookie/logging foundation
 - [ ] **Phase 2: Single-URL Archive Pipeline** - `mouse-research archive <url>` produces a complete, OCR'd, Obsidian-linked article note
 - [ ] **Phase 3: Bulk Search + Batch Archive** - `mouse-research search` with interactive review and batch archiving
-- [ ] **Phase 4: Research Graph + Hardening** - Auto-maintained People/Source notes, master index, retry mechanism, standalone OCR
+- [x] **Phase 4: Research Graph + Hardening** - Auto-maintained People/Source notes, master index, retry mechanism, standalone OCR (completed 2026-04-02)
 
 ## Phase Details
 
@@ -78,7 +78,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 04-01-PLAN.md — graph.py module: People notes, Source notes, index regeneration with TDD tests
-- [ ] 04-02-PLAN.md — Wire graph into archiver pipeline + standalone graph CLI command
+- [x] 04-02-PLAN.md — Wire graph into archiver pipeline + standalone graph CLI command
 
 ## Progress
 
@@ -90,4 +90,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation + Validation | 2/5 | In Progress|  |
 | 2. Single-URL Archive Pipeline | 5/7 | In Progress|  |
 | 3. Bulk Search + Batch Archive | 1/2 | In Progress|  |
-| 4. Research Graph + Hardening | 0/2 | Not started | - |
+| 4. Research Graph + Hardening | 2/2 | Complete   | 2026-04-02 |
