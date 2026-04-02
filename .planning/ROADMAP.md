@@ -46,8 +46,8 @@ Plans:
 - [x] 02-00-PLAN.md — Add lxml-html-clean dependency + define pipeline dataclass contracts
 - [x] 02-01-PLAN.md — Playwright fetcher: page fetch, screenshot, Newspapers.com image interception + crop
 - [x] 02-02-PLAN.md — Text extractor (newspaper4k/trafilatura) + OpenCV preprocessor pipeline
-- [ ] 02-03-PLAN.md — OCR layer: GLM-OCR primary, Tesseract fallback, OCR queue
-- [ ] 02-04-PLAN.md — Obsidian writer: folder creation, note format, metadata.json, duplicate detection
+- [x] 02-03-PLAN.md — OCR layer: GLM-OCR primary, Tesseract fallback, OCR queue
+- [x] 02-04-PLAN.md — Obsidian writer: folder creation, note format, metadata.json, duplicate detection
 - [ ] 02-05-PLAN.md — Pipeline orchestrator: archive_url() wires all 5 steps
 - [ ] 02-06-PLAN.md — CLI commands: archive (single + --file) and ocr
 **UI hint**: yes
@@ -82,6 +82,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation + Validation | 2/5 | In Progress|  |
-| 2. Single-URL Archive Pipeline | 0/? | Not started | - |
+| 2. Single-URL Archive Pipeline | 5/7 | In Progress|  |
 | 3. Bulk Search + Batch Archive | 0/? | Not started | - |
 | 4. Research Graph + Hardening | 0/? | Not started | - |

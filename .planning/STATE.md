@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-single-url-archive-pipeline/02-02-PLAN.md
-last_updated: "2026-04-02T13:10:21.391Z"
+stopped_at: Completed 02-single-url-archive-pipeline/02-03-PLAN.md
+last_updated: "2026-04-02T13:13:04.951Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 12
-  completed_plans: 8
+  completed_plans: 10
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 02 (single-url-archive-pipeline) — EXECUTING
-Plan: 4 of 7
+Plan: 6 of 7
 Status: Ready to execute
 Last activity: 2026-04-02
 
@@ -59,6 +59,8 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-single-url-archive-pipeline P00 | 1 | 2 tasks | 2 files |
 | Phase 02-single-url-archive-pipeline P01 | 70s | 1 tasks | 1 files |
 | Phase 02-single-url-archive-pipeline P02 | 2min | 2 tasks | 2 files |
+| Phase 02-single-url-archive-pipeline P03 | 54s | 1 tasks | 1 files |
+| Phase 02-single-url-archive-pipeline P04 | 69s | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -79,6 +81,8 @@ Recent decisions affecting current work:
 - [Phase 02-single-url-archive-pipeline]: fetcher.py uses list for nonlocal mutation inside Playwright response closure; httpx downloads image with cookies from storage_state JSON
 - [Phase 02-single-url-archive-pipeline]: article.publish_date coerced to date() via hasattr check — newspaper4k returns datetime, ArticleData.publish_date is Optional[date]
 - [Phase 02-single-url-archive-pipeline]: preprocessor max_dim=500 is a hard limit — documented as Phase 1 GLM-OCR GGML crash threshold; do not raise without re-validation
+- [Phase 02-single-url-archive-pipeline]: response.response attribute (not dict key) used for ollama GenerateResponse — verified against .venv SDK
+- [Phase 02-single-url-archive-pipeline]: preprocess_for_ocr() called unconditionally inside _ocr_with_glm() — cannot be bypassed by callers
 
 ### Pending Todos
 
@@ -92,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T13:10:21.389Z
-Stopped at: Completed 02-single-url-archive-pipeline/02-02-PLAN.md
+Last session: 2026-04-02T13:12:57.988Z
+Stopped at: Completed 02-single-url-archive-pipeline/02-03-PLAN.md
 Resume file: None
