@@ -43,7 +43,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. `mouse-research archive --file urls.txt` archives multiple URLs sequentially with 5-second rate limiting and logs failures to failures.jsonl without halting the batch
 **Plans**: 7 plans
 Plans:
-- [ ] 02-00-PLAN.md — Add lxml-html-clean dependency + define pipeline dataclass contracts
+- [x] 02-00-PLAN.md — Add lxml-html-clean dependency + define pipeline dataclass contracts
 - [ ] 02-01-PLAN.md — Playwright fetcher: page fetch, screenshot, Newspapers.com image interception + crop
 - [ ] 02-02-PLAN.md — Text extractor (newspaper4k/trafilatura) + OpenCV preprocessor pipeline
 - [ ] 02-03-PLAN.md — OCR layer: GLM-OCR primary, Tesseract fallback, OCR queue

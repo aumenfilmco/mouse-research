@@ -16,17 +16,17 @@
 
 ### Archiving
 
-- [ ] **ARCH-01**: `mouse-research archive <url>` fetches page via headless Playwright with saved cookies, captures article-focused screenshot (2x scale) and raw HTML — for Newspapers.com, extracts the clipped article image (not the full newspaper page)
-- [ ] **ARCH-02**: Text extraction via newspaper4k (title, author, date, body) with Trafilatura fallback when extraction returns < 50 characters
-- [ ] **ARCH-03**: GLM-OCR via Ollama processes the target article image (not the full newspaper page) with `[illegible]` markers for unreadable text, Markdown-formatted output
-- [ ] **ARCH-04**: Tesseract fallback when Ollama/GLM-OCR is unavailable; images queued for later OCR if neither is available
-- [ ] **ARCH-05**: OCR preprocessing (deskew, contrast enhancement via OpenCV) for degraded 1970s-80s scans before GLM-OCR processing
-- [ ] **ARCH-06**: Auto-detect newspaper source from URL domain (newspapers.com → parse page metadata, lancasteronline.com → "LancasterOnline", etc.)
-- [ ] **ARCH-07**: Auto-detect article date from metadata, URL patterns, or OCR output
-- [ ] **ARCH-08**: Generate article folder with slug `YYYY-MM-DD_source-slug_title-slug` containing screenshot, page image, article.md, ocr_raw.md, metadata.json, source.html
-- [ ] **ARCH-09**: Article note exported as Obsidian-formatted Markdown with YAML frontmatter (person, source, date, url, tags), wikilinks, and embedded screenshot
-- [ ] **ARCH-10**: `mouse-research ocr <image-path>` OCRs a local image (newspaper scan, photo of clipping) with `--person`, `--date`, `--source` flags and exports to vault
-- [ ] **ARCH-11**: `mouse-research archive --file urls.txt` archives multiple URLs from a file sequentially
+- [x] **ARCH-01**: `mouse-research archive <url>` fetches page via headless Playwright with saved cookies, captures article-focused screenshot (2x scale) and raw HTML — for Newspapers.com, extracts the clipped article image (not the full newspaper page)
+- [x] **ARCH-02**: Text extraction via newspaper4k (title, author, date, body) with Trafilatura fallback when extraction returns < 50 characters
+- [x] **ARCH-03**: GLM-OCR via Ollama processes the target article image (not the full newspaper page) with `[illegible]` markers for unreadable text, Markdown-formatted output
+- [x] **ARCH-04**: Tesseract fallback when Ollama/GLM-OCR is unavailable; images queued for later OCR if neither is available
+- [x] **ARCH-05**: OCR preprocessing (deskew, contrast enhancement via OpenCV) for degraded 1970s-80s scans before GLM-OCR processing
+- [x] **ARCH-06**: Auto-detect newspaper source from URL domain (newspapers.com → parse page metadata, lancasteronline.com → "LancasterOnline", etc.)
+- [x] **ARCH-07**: Auto-detect article date from metadata, URL patterns, or OCR output
+- [x] **ARCH-08**: Generate article folder with slug `YYYY-MM-DD_source-slug_title-slug` containing screenshot, page image, article.md, ocr_raw.md, metadata.json, source.html
+- [x] **ARCH-09**: Article note exported as Obsidian-formatted Markdown with YAML frontmatter (person, source, date, url, tags), wikilinks, and embedded screenshot
+- [x] **ARCH-10**: `mouse-research ocr <image-path>` OCRs a local image (newspaper scan, photo of clipping) with `--person`, `--date`, `--source` flags and exports to vault
+- [x] **ARCH-11**: `mouse-research archive --file urls.txt` archives multiple URLs from a file sequentially
 
 ### Bulk Search
 
@@ -89,17 +89,17 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FOUND-04 | Phase 1 | Complete |
 | FOUND-05 | Phase 1 | Complete |
 | FOUND-06 | Phase 1 | Complete |
-| ARCH-01 | Phase 2 | Pending |
-| ARCH-02 | Phase 2 | Pending |
-| ARCH-03 | Phase 2 | Pending |
-| ARCH-04 | Phase 2 | Pending |
-| ARCH-05 | Phase 2 | Pending |
-| ARCH-06 | Phase 2 | Pending |
-| ARCH-07 | Phase 2 | Pending |
-| ARCH-08 | Phase 2 | Pending |
-| ARCH-09 | Phase 2 | Pending |
-| ARCH-10 | Phase 2 | Pending |
-| ARCH-11 | Phase 2 | Pending |
+| ARCH-01 | Phase 2 | Complete |
+| ARCH-02 | Phase 2 | Complete |
+| ARCH-03 | Phase 2 | Complete |
+| ARCH-04 | Phase 2 | Complete |
+| ARCH-05 | Phase 2 | Complete |
+| ARCH-06 | Phase 2 | Complete |
+| ARCH-07 | Phase 2 | Complete |
+| ARCH-08 | Phase 2 | Complete |
+| ARCH-09 | Phase 2 | Complete |
+| ARCH-10 | Phase 2 | Complete |
+| ARCH-11 | Phase 2 | Complete |
 | BULK-01 | Phase 3 | Pending |
 | BULK-02 | Phase 3 | Pending |
 | BULK-03 | Phase 3 | Pending |

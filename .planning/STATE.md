@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-foundation-validation/01-04-PLAN.md
-last_updated: "2026-04-02T10:53:24.556Z"
+stopped_at: Completed 02-single-url-archive-pipeline/02-00-PLAN.md
+last_updated: "2026-04-02T13:06:44.679Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 5
-  completed_plans: 5
+  total_plans: 12
+  completed_plans: 6
   percent: 0
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** `mouse-research archive <url>` produces a complete, OCR'd, Obsidian-linked article note from any newspaper URL — accurately and reliably.
-**Current focus:** Phase 01 — foundation-validation
+**Current focus:** Phase 02 — single-url-archive-pipeline
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (single-url-archive-pipeline) — EXECUTING
+Plan: 2 of 7
 Status: Ready to execute
 Last activity: 2026-04-02
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation-validation P02 | 3min | 2 tasks | 3 files |
 | Phase 01-foundation-validation P03 | 4min | 3 tasks | 3 files |
 | Phase 01-foundation-validation P04 | 2min | 2 tasks | 2 files |
+| Phase 02-single-url-archive-pipeline P00 | 1 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation-validation]: YAML override test uses TestConfig subclass: pydantic-settings bakes yaml_file at class definition time; patching CONFIG_PATH post-import is ineffective
 - [Phase 01-foundation-validation]: sys.executable instead of 'python3' in _check_playwright_browsers(): venv Python must be used for subprocess checks to find the correct playwright installation
 - [Phase 01-foundation-validation]: storage_state() over launch_persistent_context(): Playwright bug #36139 causes session cookies not to persist with launch_persistent_context(); storage_state() save/load is the correct approach
+- [Phase 02-single-url-archive-pipeline]: lxml-html-clean placed after trafilatura in pyproject.toml — both newspaper4k and trafilatura require it
+- [Phase 02-single-url-archive-pipeline]: types.py fields match RESEARCH.md Pattern 1 exactly — no additional fields to preserve downstream contract stability
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-01T23:23:09.183Z
-Stopped at: Completed 01-foundation-validation/01-04-PLAN.md
+Last session: 2026-04-02T13:06:44.677Z
+Stopped at: Completed 02-single-url-archive-pipeline/02-00-PLAN.md
 Resume file: None
