@@ -147,7 +147,30 @@ def ocr_image(
     """
     logger = get_logger(__name__)
 
-    # Tier 1: GLM-OCR
+    # For full newspaper pages: Tesseract at original resolution is superior.
+    # GLM-OCR hallucinates and is limited to 500px (loses body text).
+    # Tesseract gets 3x more text with zero hallucination.
+    img_w, img_h = 0, 0
+    try:
+        from PIL import Image as _Img
+        _im = _Img.open(str(image_path))
+        img_w, img_h = _im.size
+        _im.close()
+    except Exception:
+        pass
+
+    is_full_page = img_h > img_w * 1.5 and max(img_w, img_h) > 800
+
+    if is_full_page:
+        # Tier 1 for full pages: Tesseract at original resolution
+        try:
+            text = _ocr_with_tesseract(image_path)
+            logger.info("Tesseract OCR (full page): %d chars", len(text))
+            return OcrResult(text=text, engine="tesseract")
+        except Exception as e:
+            logger.warning("Tesseract failed: %s — trying GLM-OCR", e)
+
+    # Tier 1 for crops / small images: GLM-OCR
     if _ollama_available(config.ocr.ollama_url):
         try:
             text = _ocr_with_glm(image_path, config.ocr.ollama_url)
@@ -156,7 +179,7 @@ def ocr_image(
         except Exception as e:
             logger.warning("GLM-OCR failed: %s — trying Tesseract", e)
 
-    # Tier 2: Tesseract
+    # Tier 2: Tesseract fallback for crops
     try:
         text = _ocr_with_tesseract(image_path)
         logger.info("Tesseract OCR succeeded: %d chars", len(text))
