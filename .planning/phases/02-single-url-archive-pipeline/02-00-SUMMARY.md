@@ -115,3 +115,12 @@ None - no external service configuration required.
 ---
 *Phase: 02-single-url-archive-pipeline*
 *Completed: 2026-04-02*
+
+## Self-Check: PASSED
+
+- FOUND: src/mouse_research/types.py
+- FOUND: pyproject.toml (with lxml-html-clean>=0.4.4)
+- FOUND: 02-00-SUMMARY.md
+- FOUND commit: 9031146 (feat: lxml-html-clean)
+- FOUND commit: 232a681 (feat: types.py dataclasses)
+- FOUND commit: 3ab3f55 (docs: plan metadata)

@@ -8,30 +8,27 @@ A CLI-driven newspaper research pipeline for the MOUSE documentary project ("MOU
 
 `mouse-research archive <url>` produces a complete, OCR'd, Obsidian-linked article note from any newspaper URL — accurately and reliably.
 
-## Requirements
+## Current State
 
-### Validated
+**v1.0 shipped 2026-04-02** — full research pipeline operational.
 
-(None yet — ship to validate)
-
-### Active
-
-- [ ] Single URL archiving with Playwright fetch, screenshot, and HTML capture
-- [ ] Text extraction via newspaper4k with Trafilatura fallback
-- [ ] High-accuracy OCR via GLM-OCR (Ollama) for scanned newspaper pages, with Tesseract fallback
-- [ ] Obsidian export with frontmatter, wikilinks, and embedded screenshots
-- [ ] Auto-maintained People notes with article backlinks
-- [ ] Auto-maintained Source notes with article backlinks
-- [ ] Auto-generated master article index
-- [ ] Cookie management for authenticated Newspapers.com access (interactive login, saved cookies)
-- [ ] Bulk discovery via newspapers-com-scraper (Node.js) with search, dedup, and filtering
-- [ ] Interactive review mode for search results (select which to archive)
-- [ ] Auto-archive mode for batch processing search results
-- [ ] Batch archiving with progress display, rate limiting, and failure logging
-- [ ] Local image OCR (`mouse-research ocr <image>`) for newspaper clippings and photos
-- [ ] Health check command (`mouse-research doctor`) validating all dependencies
-- [ ] YAML configuration for vault paths, OCR settings, browser settings, and source mapping
-- [ ] Structured logging and failure retry mechanism
+### What Works
+- [x] Single URL archiving with Playwright fetch, screenshot, and HTML capture
+- [x] Text extraction via newspaper4k with Trafilatura fallback
+- [x] High-accuracy OCR via GLM-OCR (Ollama) for scanned newspaper pages, with Tesseract fallback
+- [x] Obsidian export with frontmatter, wikilinks, and embedded screenshots
+- [x] Auto-maintained People notes with article backlinks
+- [x] Auto-maintained Source notes with article backlinks
+- [x] Auto-generated master article index
+- [x] Cookie management for authenticated Newspapers.com access (interactive login, saved cookies)
+- [x] Bulk discovery via newspapers-com-scraper (Node.js) with search, dedup, and filtering
+- [x] Interactive review mode for search results (select which to archive)
+- [x] Auto-archive mode for batch processing search results
+- [x] Batch archiving with progress display, rate limiting, and failure logging
+- [x] Local image OCR (`mouse-research ocr <image>`) for newspaper clippings and photos
+- [x] Health check command (`mouse-research doctor`) validating all dependencies
+- [x] YAML configuration for vault paths, OCR settings, browser settings, and source mapping
+- [x] Structured logging and failure retry mechanism
 
 ### Out of Scope
 
@@ -90,4 +87,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-01 after initialization*
+*Last updated: 2026-04-02 after v1.0 milestone completion*
