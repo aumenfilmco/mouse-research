@@ -65,7 +65,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 03-01-PLAN.md — Searcher module: scraper subprocess, result parsing, dedup filtering, location mapping, selection parsing
-- [ ] 03-02-PLAN.md — CLI commands: search (interactive + auto-archive) and retry-failures with Rich progress
+- [x] 03-02-PLAN.md — CLI commands: search (interactive + auto-archive) and retry-failures with Rich progress
 
 ### Phase 4: Research Graph + Hardening
 **Goal**: Every archived article automatically updates the relevant People notes, Source notes, and master index; failed batches can be retried; and the system prompts for re-login when a session expires mid-run

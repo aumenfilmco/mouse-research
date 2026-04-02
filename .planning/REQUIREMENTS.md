@@ -33,11 +33,11 @@
 - [x] **BULK-01**: `mouse-research search "<query>"` calls newspapers-com-scraper as Node.js subprocess and returns structured search results (newspaper, date, location, URL, match count)
 - [x] **BULK-02**: Search results deduplicated against existing articles in Obsidian vault (match on URL or date+source combination)
 - [x] **BULK-03**: Search results filterable by year range (`--years`), location (`--location`), and target newspapers
-- [ ] **BULK-04**: Interactive review mode displays numbered results; user selects which to archive (e.g., `1,3,5-12,all`)
-- [ ] **BULK-05**: `--auto-archive` flag feeds all search results directly into the archiving pipeline
-- [ ] **BULK-06**: Batch archiving with 5-second rate limiting between fetches, progress bar, and failure continuation
-- [ ] **BULK-07**: Batch summary at completion showing archived/failed counts
-- [ ] **BULK-08**: `mouse-research retry-failures` reprocesses URLs from failures.jsonl
+- [x] **BULK-04**: Interactive review mode displays numbered results; user selects which to archive (e.g., `1,3,5-12,all`)
+- [x] **BULK-05**: `--auto-archive` flag feeds all search results directly into the archiving pipeline
+- [x] **BULK-06**: Batch archiving with 5-second rate limiting between fetches, progress bar, and failure continuation
+- [x] **BULK-07**: Batch summary at completion showing archived/failed counts
+- [x] **BULK-08**: `mouse-research retry-failures` reprocesses URLs from failures.jsonl
 
 ### Research Graph
 
@@ -103,11 +103,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BULK-01 | Phase 3 | Complete |
 | BULK-02 | Phase 3 | Complete |
 | BULK-03 | Phase 3 | Complete |
-| BULK-04 | Phase 3 | Pending |
-| BULK-05 | Phase 3 | Pending |
-| BULK-06 | Phase 3 | Pending |
-| BULK-07 | Phase 3 | Pending |
-| BULK-08 | Phase 3 | Pending |
+| BULK-04 | Phase 3 | Complete |
+| BULK-05 | Phase 3 | Complete |
+| BULK-06 | Phase 3 | Complete |
+| BULK-07 | Phase 3 | Complete |
+| BULK-08 | Phase 3 | Complete |
 | GRAPH-01 | Phase 4 | Pending |
 | GRAPH-02 | Phase 4 | Pending |
 | GRAPH-03 | Phase 4 | Pending |
