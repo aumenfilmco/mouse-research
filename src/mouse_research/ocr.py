@@ -45,21 +45,61 @@ def _ollama_available(ollama_url: str) -> bool:
 
 
 def _ocr_with_glm(image_path: Path, ollama_url: str) -> str:
-    """Run GLM-OCR via Ollama. Raises on failure."""
+    """Run GLM-OCR via Ollama. Splits large images into sections.
+
+    For full newspaper pages (height > 2x width), splits into vertical
+    sections and OCRs each at 500px max. This avoids the GGML crash limit
+    while capturing the full page text instead of just headlines.
+    """
     import ollama
+    from PIL import Image
     from mouse_research.preprocessor import preprocess_for_ocr
 
-    # Preprocess: grayscale → CLAHE → denoise → deskew → 500px resize
-    # This is MANDATORY — do not skip even if image looks small
-    image_bytes = preprocess_for_ocr(image_path, max_dim=500)
+    img = Image.open(str(image_path))
+    w, h = img.size
 
-    client = ollama.Client(host=ollama_url)
-    response = client.generate(
-        model="glm-ocr",
-        prompt=_GLM_OCR_PROMPT,
-        images=[image_bytes],  # bytes accepted directly — no manual base64
-    )
-    return response.response   # GenerateResponse.response field (verified in .venv)
+    # If image is tall (full newspaper page), split into sections
+    if h > w * 1.5 and max(w, h) > 800:
+        # Split into sections that are roughly square when resized to 500px
+        section_height = w  # each section is ~square (width x width)
+        sections = []
+        y = 0
+        while y < h:
+            bottom = min(y + section_height, h)
+            section = img.crop((0, y, w, bottom))
+            sections.append(section)
+            y = bottom
+
+        client = ollama.Client(host=ollama_url)
+        all_text = []
+        for i, section in enumerate(sections):
+            # Save section to temp file for preprocessing
+            import tempfile
+            with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
+                section.save(tmp.name, "JPEG", quality=90)
+                section_bytes = preprocess_for_ocr(Path(tmp.name), max_dim=500)
+                Path(tmp.name).unlink(missing_ok=True)
+
+            response = client.generate(
+                model="glm-ocr",
+                prompt=_GLM_OCR_PROMPT,
+                images=[section_bytes],
+            )
+            text = response.response.strip()
+            if text:
+                all_text.append(text)
+
+        return "\n\n".join(all_text)
+    else:
+        # Small image or article crop — process as single image
+        image_bytes = preprocess_for_ocr(image_path, max_dim=500)
+        client = ollama.Client(host=ollama_url)
+        response = client.generate(
+            model="glm-ocr",
+            prompt=_GLM_OCR_PROMPT,
+            images=[image_bytes],
+        )
+        return response.response
 
 
 def _ocr_with_tesseract(image_path: Path) -> str:
