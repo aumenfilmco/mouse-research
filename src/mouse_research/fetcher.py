@@ -120,15 +120,20 @@ def _download_page_image_via_browser(
 
 
 def _detect_cloudflare(html: str) -> bool:
-    """Check if the page content is a Cloudflare challenge, not the real article."""
-    indicators = [
-        "Verifying you are human",
-        "Performing security verification",
-        "security service to protect against",
-        "cf-browser-verification",
-        "challenge-platform",
-    ]
-    return any(indicator.lower() in html.lower() for indicator in indicators)
+    """Check if the page is a Cloudflare challenge page, not a real article.
+
+    Must be strict — Newspapers.com pages include residual Cloudflare scripts
+    even after the challenge resolves. Only trigger on the actual challenge page
+    which has a distinctive <title> and lacks real article content.
+    """
+    lower = html.lower()
+    # Cloudflare challenge pages always have "Just a moment" as the title
+    if "<title>just a moment</title>" in lower:
+        return True
+    # Or the explicit verification interstitial (no article content present)
+    if "verifying you are human" in lower and "newspapers.com/image" not in lower:
+        return True
+    return False
 
 
 def _solve_cloudflare_turnstile(page) -> None:
