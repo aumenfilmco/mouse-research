@@ -41,11 +41,11 @@
 
 ### Research Graph
 
-- [ ] **GRAPH-01**: People notes (`Research/People/<name>.md`) auto-created on first reference with header and empty sections
-- [ ] **GRAPH-02**: People notes auto-updated with article backlink entry under `## Articles` section (append-only, never overwrite existing content)
-- [ ] **GRAPH-03**: Source notes (`Research/Sources/<name>.md`) auto-created on first reference
-- [ ] **GRAPH-04**: Source notes auto-updated with article backlink entry under `## Articles` section (append-only)
-- [ ] **GRAPH-05**: Master index (`Research/Articles/_index.md`) auto-regenerated on each archive run, sorted reverse-chronological, grouped by person with article counts
+- [x] **GRAPH-01**: People notes (`Research/People/<name>.md`) auto-created on first reference with header and empty sections
+- [x] **GRAPH-02**: People notes auto-updated with article backlink entry under `## Articles` section (append-only, never overwrite existing content)
+- [x] **GRAPH-03**: Source notes (`Research/Sources/<name>.md`) auto-created on first reference
+- [x] **GRAPH-04**: Source notes auto-updated with article backlink entry under `## Articles` section (append-only)
+- [x] **GRAPH-05**: Master index (`Research/Articles/_index.md`) auto-regenerated on each archive run, sorted reverse-chronological, grouped by person with article counts
 
 ### Setup
 
@@ -108,11 +108,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BULK-06 | Phase 3 | Complete |
 | BULK-07 | Phase 3 | Complete |
 | BULK-08 | Phase 3 | Complete |
-| GRAPH-01 | Phase 4 | Pending |
-| GRAPH-02 | Phase 4 | Pending |
-| GRAPH-03 | Phase 4 | Pending |
-| GRAPH-04 | Phase 4 | Pending |
-| GRAPH-05 | Phase 4 | Pending |
+| GRAPH-01 | Phase 4 | Complete |
+| GRAPH-02 | Phase 4 | Complete |
+| GRAPH-03 | Phase 4 | Complete |
+| GRAPH-04 | Phase 4 | Complete |
+| GRAPH-05 | Phase 4 | Complete |
 | SETUP-01 | Phase 1 | Complete |
 | SETUP-02 | Phase 1 | Complete |
 

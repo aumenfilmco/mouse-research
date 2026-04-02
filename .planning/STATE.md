@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 03-bulk-search-batch-archive/03-02-PLAN.md
-last_updated: "2026-04-02T15:24:39.383Z"
+status: executing
+stopped_at: Completed 04-research-graph-hardening/04-01-PLAN.md
+last_updated: "2026-04-02T15:49:04.542Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 14
-  completed_plans: 14
+  total_plans: 16
+  completed_plans: 15
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** `mouse-research archive <url>` produces a complete, OCR'd, Obsidian-linked article note from any newspaper URL — accurately and reliably.
-**Current focus:** Phase 03 — bulk-search-batch-archive
+**Current focus:** Phase 04 — research-graph-hardening
 
 ## Current Position
 
-Phase: 03 (bulk-search-batch-archive) — EXECUTING
+Phase: 04 (research-graph-hardening) — EXECUTING
 Plan: 2 of 2
-Status: Phase complete — ready for verification
+Status: Ready to execute
 Last activity: 2026-04-02
 
 Progress: [░░░░░░░░░░] 0%
@@ -64,6 +64,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-single-url-archive-pipeline P06 | 10min | 1 tasks | 1 files |
 | Phase 03-bulk-search-batch-archive P01 | 4min | 1 tasks | 2 files |
 | Phase 03-bulk-search-batch-archive P02 | 1min | 1 tasks | 1 files |
+| Phase 04-research-graph-hardening P01 | 2min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,8 @@ Recent decisions affecting current work:
 - [Phase 03-bulk-search-batch-archive]: searcher.py is the sole Python-to-Node.js boundary; search_and_filter() is the public CLI entry point, call_scraper() is internal utility
 - [Phase 03-bulk-search-batch-archive]: retry-failures uses inline loop (not _batch_archive_with_progress) to track per-record success for FAILURE_LOG rewrite
 - [Phase 03-bulk-search-batch-archive]: result.skipped counts as resolved in retry-failures (already in vault = no longer actionable failure)
+- [Phase 04-research-graph-hardening]: Person names normalized to title case via .strip().title() before filename construction — prevents duplicate notes from casing differences
+- [Phase 04-research-graph-hardening]: Idempotency detected by '[[slug|' substring in ## Articles section — slug is stable; title/date may vary
 
 ### Pending Todos
 
@@ -107,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T15:24:39.382Z
-Stopped at: Completed 03-bulk-search-batch-archive/03-02-PLAN.md
+Last session: 2026-04-02T15:49:04.540Z
+Stopped at: Completed 04-research-graph-hardening/04-01-PLAN.md
 Resume file: None

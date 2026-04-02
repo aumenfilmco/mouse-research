@@ -77,7 +77,7 @@ Plans:
   3. After any archive run, `Research/Articles/_index.md` reflects all articles in the vault sorted reverse-chronological and grouped by person with article counts
 **Plans**: 2 plans
 Plans:
-- [ ] 04-01-PLAN.md — graph.py module: People notes, Source notes, index regeneration with TDD tests
+- [x] 04-01-PLAN.md — graph.py module: People notes, Source notes, index regeneration with TDD tests
 - [ ] 04-02-PLAN.md — Wire graph into archiver pipeline + standalone graph CLI command
 
 ## Progress
