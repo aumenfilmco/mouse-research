@@ -290,12 +290,12 @@ def _display_results(results: list, excluded_count: int) -> None:
 
 
 def _batch_archive_with_progress(
-    urls_and_titles: list[tuple[str, str]],
+    urls_and_titles: list[tuple[str, str, str]],
     config,
     persons: list,
     tags: list,
 ) -> None:
-    """Archive a list of (url, title) pairs with a Rich Progress bar and rate limiting."""
+    """Archive a list of (url, title, date) tuples with a Rich Progress bar and rate limiting."""
     import time
     from mouse_research.archiver import archive_url
     from mouse_research.fetcher import BrowserSession
@@ -314,12 +314,12 @@ def _batch_archive_with_progress(
             transient=False,
         ) as progress:
             task = progress.add_task("Archiving", total=len(urls_and_titles))
-            for i, (url, title) in enumerate(urls_and_titles):
+            for i, (url, title, date_hint) in enumerate(urls_and_titles):
                 if i > 0:
                     time.sleep(config.rate_limit_seconds)
                 desc = title[:50] + "..." if len(title) > 50 else title
                 progress.update(task, description=desc)
-                result = archive_url(url, config, person=persons, tags=tags, session=session)
+                result = archive_url(url, config, person=persons, tags=tags, session=session, date_hint=date_hint)
                 if result.error:
                     failed += 1
                 else:
@@ -376,7 +376,7 @@ def search(
     _display_results(results, excluded_count)
 
     if auto_archive:
-        urls_and_titles = [(r.url, r.title) for r in results]
+        urls_and_titles = [(r.url, r.title, r.date) for r in results]
         _batch_archive_with_progress(urls_and_titles, config, persons, tags)
     else:
         from rich.prompt import Prompt
@@ -386,7 +386,7 @@ def search(
         except ValueError as e:
             console.print(f"[red]Invalid selection:[/red] {e}")
             raise typer.Exit(code=1)
-        selected = [(results[i].url, results[i].title) for i in indices]
+        selected = [(results[i].url, results[i].title, results[i].date) for i in indices]
         console.print(f"Archiving [bold]{len(selected)}[/bold] articles...")
         _batch_archive_with_progress(selected, config, persons, tags)
 

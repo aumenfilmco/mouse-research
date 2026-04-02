@@ -55,6 +55,7 @@ def archive_url(
     person: list[str] | None = None,
     tags: list[str] | None = None,
     session: BrowserSession | None = None,
+    date_hint: str | None = None,
 ) -> ArchiveResult:
     """Archive a single URL into the Obsidian vault.
 
@@ -70,6 +71,9 @@ def archive_url(
         config: AppConfig with vault, ocr, browser settings
         person: Person names to associate with this article (for frontmatter)
         tags: Tags to apply to the article note
+        date_hint: ISO date string from search results (e.g. "1984-12-12").
+                   Used instead of detect_date when provided — avoids bad guesses
+                   on JS-rendered pages like Newspapers.com.
 
     Returns:
         ArchiveResult with outcome details
@@ -100,8 +104,16 @@ def archive_url(
             logger.info("Step 2: Extracting text")
             article_data = extract_text(url, fetch_result.html)
             source_name = detect_source(url, fetch_result.html)
-            publish_date = detect_date(url, article_data, fetch_result.html)
-            article_data.publish_date = publish_date
+            if date_hint:
+                # Use the date from search results — much more reliable than
+                # guessing from JS-rendered Newspapers.com pages
+                from datetime import date as _date
+                try:
+                    article_data.publish_date = _date.fromisoformat(date_hint)
+                except ValueError:
+                    article_data.publish_date = detect_date(url, article_data, fetch_result.html)
+            else:
+                article_data.publish_date = detect_date(url, article_data, fetch_result.html)
 
             # For Newspapers.com: the <title> tag returns the newspaper name,
             # not the article headline. Title will be patched from OCR in Step 3.
@@ -116,8 +128,12 @@ def archive_url(
                 or len(article_data.text.strip()) < 50
             )
             if should_ocr:
+                # Prefer full page image for OCR — captures entire article text.
+                # The preprocessor resizes to 500px max before sending to GLM-OCR.
                 ocr_target = (
-                    fetch_result.article_image_path or fetch_result.screenshot_path
+                    fetch_result.page_image_path
+                    or fetch_result.article_image_path
+                    or fetch_result.screenshot_path
                 )
                 if ocr_target and ocr_target.exists():
                     logger.info("Step 3: OCR on %s", ocr_target.name)
