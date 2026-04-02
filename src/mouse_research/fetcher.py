@@ -350,10 +350,10 @@ def fetch_url(
                 if (
                     "img.newspapers.com" in response.url
                     and response.status == 200
+                    and "image" in response.headers.get("content-type", "")
                 ):
-                    ct = response.headers.get("content-type", "")
-                    if "image" in ct and not intercepted_image_urls:
-                        intercepted_image_urls.append(response.url)
+                    # Collect ALL image URLs — we'll pick the best one later
+                    intercepted_image_urls.append(response.url)
 
             page.on("response", capture_image)
 
@@ -400,11 +400,12 @@ def fetch_url(
             page_jpg_path = output_dir / "page_image.jpg"
             image_url_to_download: str | None = None
 
-            if intercepted_image_urls:
-                image_url_to_download = intercepted_image_urls[0]
-            else:
-                # Fallback: construct URL from article URL image ID
-                image_url_to_download = _construct_fallback_image_url(url)
+            # Always prefer the constructed full-res URL (width=2000) over
+            # intercepted URLs which may be thumbnails
+            image_url_to_download = _construct_fallback_image_url(url)
+            if not image_url_to_download and intercepted_image_urls:
+                # Pick the URL with the largest width param, or last loaded
+                image_url_to_download = intercepted_image_urls[-1]
 
             if image_url_to_download:
                 # Use browser context (not httpx) to carry session cookies
