@@ -54,8 +54,15 @@ def interactive_login(domain: str, console: Console | None = None) -> bool:
         browser = p.chromium.launch(
             headless=False,
             channel="chrome",
+            args=[
+                "--disable-blink-features=AutomationControlled",
+            ],
         )
-        context = browser.new_context()
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        )
+        # Remove webdriver detection flag
+        context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
         page = context.new_page()
         page.goto(login_url, wait_until="domcontentloaded")
 
