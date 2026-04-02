@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-single-url-archive-pipeline/02-06-PLAN.md
-last_updated: "2026-04-02T14:43:47.668Z"
+stopped_at: Completed 03-bulk-search-batch-archive/03-01-PLAN.md
+last_updated: "2026-04-02T15:21:55.842Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 12
-  completed_plans: 12
+  total_plans: 14
+  completed_plans: 13
   percent: 0
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** `mouse-research archive <url>` produces a complete, OCR'd, Obsidian-linked article note from any newspaper URL — accurately and reliably.
-**Current focus:** Phase 02 — single-url-archive-pipeline
+**Current focus:** Phase 03 — bulk-search-batch-archive
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
+Phase: 03 (bulk-search-batch-archive) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
 Last activity: 2026-04-02
 
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-single-url-archive-pipeline P03 | 54s | 1 tasks | 1 files |
 | Phase 02-single-url-archive-pipeline P04 | 69s | 1 tasks | 1 files |
 | Phase 02-single-url-archive-pipeline P06 | 10min | 1 tasks | 1 files |
+| Phase 03-bulk-search-batch-archive P01 | 4min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,9 @@ Recent decisions affecting current work:
 - [Phase 02-single-url-archive-pipeline]: frontmatter.dumps() used (not frontmatter.dump()) — returns string suitable for write_text() workflow
 - [Phase 02-single-url-archive-pipeline]: archive and ocr commands use lazy imports inside function body — consistent with existing install/doctor/login pattern
 - [Phase 02-single-url-archive-pipeline]: _archive_file() continues on failure without raise typer.Exit — failure already logged by archiver to failures.jsonl
+- [Phase 03-bulk-search-batch-archive]: ScraperError wraps all subprocess failures; Cloudflare-specific branch adds login hint to match existing fetcher.py pattern
+- [Phase 03-bulk-search-batch-archive]: resolve_location() strips/lowercases before lookup, passes through unknown codes unchanged — safe for callers passing already-resolved region codes
+- [Phase 03-bulk-search-batch-archive]: searcher.py is the sole Python-to-Node.js boundary; search_and_filter() is the public CLI entry point, call_scraper() is internal utility
 
 ### Pending Todos
 
@@ -100,6 +104,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T13:23:10.280Z
-Stopped at: Completed 02-single-url-archive-pipeline/02-06-PLAN.md
+Last session: 2026-04-02T15:21:55.840Z
+Stopped at: Completed 03-bulk-search-batch-archive/03-01-PLAN.md
 Resume file: None

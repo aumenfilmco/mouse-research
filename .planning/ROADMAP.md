@@ -64,7 +64,7 @@ Plans:
   5. `mouse-research retry-failures` reads failures.jsonl and reprocesses failed URLs
 **Plans**: 2 plans
 Plans:
-- [ ] 03-01-PLAN.md — Searcher module: scraper subprocess, result parsing, dedup filtering, location mapping, selection parsing
+- [x] 03-01-PLAN.md — Searcher module: scraper subprocess, result parsing, dedup filtering, location mapping, selection parsing
 - [ ] 03-02-PLAN.md — CLI commands: search (interactive + auto-archive) and retry-failures with Rich progress
 
 ### Phase 4: Research Graph + Hardening
@@ -86,5 +86,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation + Validation | 2/5 | In Progress|  |
 | 2. Single-URL Archive Pipeline | 5/7 | In Progress|  |
-| 3. Bulk Search + Batch Archive | 0/2 | Not started | - |
+| 3. Bulk Search + Batch Archive | 1/2 | In Progress|  |
 | 4. Research Graph + Hardening | 0/? | Not started | - |
