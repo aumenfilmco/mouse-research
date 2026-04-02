@@ -139,6 +139,54 @@ def _detect_cloudflare(html: str) -> bool:
     return any(indicator.lower() in html.lower() for indicator in indicators)
 
 
+def _solve_cloudflare_turnstile(page) -> None:
+    """Attempt to auto-solve a Cloudflare Turnstile challenge.
+
+    Looks for the Turnstile iframe, clicks the checkbox inside it,
+    and waits briefly for the challenge to process.
+    """
+    try:
+        # Turnstile renders in an iframe with cf-turnstile in the src or parent
+        for frame in page.frames:
+            if "challenges.cloudflare.com" in (frame.url or ""):
+                # Try clicking the checkbox inside the Turnstile iframe
+                try:
+                    checkbox = frame.locator("input[type='checkbox']")
+                    if checkbox.count() > 0:
+                        checkbox.first.click(timeout=5000)
+                        page.wait_for_timeout(3000)
+                        return
+                except Exception:
+                    pass
+                # Alternative: click the label/div wrapping the checkbox
+                try:
+                    frame.locator("#challenge-stage").click(timeout=5000)
+                    page.wait_for_timeout(3000)
+                    return
+                except Exception:
+                    pass
+
+        # Fallback: try clicking the turnstile widget div on the main page
+        try:
+            page.locator("div.cf-turnstile").click(timeout=5000)
+            page.wait_for_timeout(3000)
+        except Exception:
+            pass
+
+        # Last resort: try clicking in the center of the iframe element
+        try:
+            iframe_el = page.locator("iframe[src*='challenges.cloudflare.com']")
+            if iframe_el.count() > 0:
+                iframe_el.first.click(timeout=5000)
+                page.wait_for_timeout(3000)
+        except Exception:
+            pass
+
+    except Exception:
+        # Auto-solve failed — the 30s poll loop will catch it
+        pass
+
+
 def _construct_fallback_image_url(article_url: str) -> str | None:
     """Try to construct an img.newspapers.com URL from the article URL's image ID."""
     match = re.search(r"/image/(\d+)", article_url)
@@ -313,37 +361,28 @@ def fetch_url(
             html = ""
 
         if _detect_cloudflare(html):
-            if config.browser.headless:
-                if own_browser:
-                    browser.close()
-                    _pw_ctx.stop()
-                raise FetchError(
-                    url,
-                    "Cloudflare challenge detected in headless mode. "
-                    "Set browser.headless=false in config or run: mouse-research login newspapers.com"
-                )
-            # Non-headless: user can see the Chrome window — wait for them
-            from rich.console import Console as _Con
-            _Con().print(
-                "[yellow]Cloudflare challenge detected in the Chrome window. "
-                "Please solve it (click 'Verify you are human'), then wait...[/yellow]"
-            )
-            # Poll until Cloudflare resolves (up to 60s)
-            for _attempt in range(12):
+            # Try to auto-solve the Turnstile challenge by clicking the checkbox
+            _solve_cloudflare_turnstile(page)
+
+            # Poll until Cloudflare resolves (up to 30s)
+            resolved = False
+            for _attempt in range(6):
                 page.wait_for_timeout(5000)
                 try:
                     html = page.content()
                 except Exception:
                     continue
                 if not _detect_cloudflare(html):
+                    resolved = True
                     break
-            else:
+
+            if not resolved:
                 if own_browser:
                     browser.close()
                     _pw_ctx.stop()
                 raise FetchError(
                     url,
-                    "Cloudflare challenge not resolved after 60s. "
+                    "Cloudflare challenge not resolved after 30s. "
                     "Run: mouse-research login newspapers.com"
                 )
 
