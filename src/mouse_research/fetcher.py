@@ -197,13 +197,19 @@ def fetch_url(url: str, config: AppConfig, output_dir: Path) -> FetchResult:
             browser = p.chromium.launch(
                 headless=config.browser.headless,
                 channel="chrome",
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                ],
             )
 
-            context_kwargs: dict = {}
+            context_kwargs: dict = {
+                "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            }
             if storage:
                 context_kwargs["storage_state"] = storage
 
             context = browser.new_context(**context_kwargs)
+            context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
             page = context.new_page()
 
             # For Newspapers.com: intercept the full-page JPG URL before navigation
