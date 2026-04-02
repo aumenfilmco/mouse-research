@@ -240,6 +240,14 @@ def ocr(
     write_article_note(folder, record)
     write_metadata_json(folder, record)
 
+    # Update research graph (non-fatal)
+    try:
+        from mouse_research.graph import update_graph
+        update_graph(record, config)
+    except Exception as e:
+        from mouse_research.logger import get_logger
+        get_logger(__name__).error("Graph update failed (non-fatal): %s", e, exc_info=True)
+
     console.print(f"[green]OCR complete:[/green] {slug}")
     console.print(f"Folder: {folder}")
     console.print(f"Engine: {ocr_result.engine}")
@@ -454,6 +462,28 @@ def retry_failures(
     )
 
     console.print(f"[bold]Done:[/bold] {archived} resolved, {len(still_failed)} still failed")
+
+
+@app.command()
+def graph(
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable debug logging"),
+):
+    """Rebuild the research graph (People notes, Source notes, master index).
+
+    Regenerates Research/Articles/_index.md from all archived articles.
+    Useful after manual vault edits or to fix graph inconsistencies.
+    """
+    from mouse_research.config import get_config
+    from mouse_research.logger import setup_logging
+    from mouse_research.graph import regenerate_index
+
+    setup_logging(verbose=verbose)
+    config = get_config()
+
+    with console.status("Rebuilding article index..."):
+        regenerate_index(config.vault.path)
+
+    console.print("[green]Index rebuilt:[/green] Research/Articles/_index.md")
 
 
 if __name__ == "__main__":

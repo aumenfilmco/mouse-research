@@ -206,6 +206,13 @@ def archive_url(
             write_article_note(folder, record)
             write_metadata_json(folder, record)
 
+            # Step 6: Update research graph (non-fatal)
+            try:
+                from mouse_research.graph import update_graph
+                update_graph(record, config)
+            except Exception as e:
+                logger.error("Graph update failed (non-fatal): %s", e, exc_info=True)
+
             logger.info("Archive complete: %s", slug)
             return ArchiveResult(
                 url=url,
