@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-single-url-archive-pipeline/02-03-PLAN.md
-last_updated: "2026-04-02T13:13:04.951Z"
+stopped_at: Completed 02-single-url-archive-pipeline/02-04-PLAN.md
+last_updated: "2026-04-02T13:13:09.529Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 4
@@ -83,6 +83,7 @@ Recent decisions affecting current work:
 - [Phase 02-single-url-archive-pipeline]: preprocessor max_dim=500 is a hard limit — documented as Phase 1 GLM-OCR GGML crash threshold; do not raise without re-validation
 - [Phase 02-single-url-archive-pipeline]: response.response attribute (not dict key) used for ollama GenerateResponse — verified against .venv SDK
 - [Phase 02-single-url-archive-pipeline]: preprocess_for_ocr() called unconditionally inside _ocr_with_glm() — cannot be bypassed by callers
+- [Phase 02-single-url-archive-pipeline]: frontmatter.dumps() used (not frontmatter.dump()) — returns string suitable for write_text() workflow
 
 ### Pending Todos
 
@@ -96,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T13:12:57.988Z
-Stopped at: Completed 02-single-url-archive-pipeline/02-03-PLAN.md
+Last session: 2026-04-02T13:13:09.527Z
+Stopped at: Completed 02-single-url-archive-pipeline/02-04-PLAN.md
 Resume file: None
