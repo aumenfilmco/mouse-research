@@ -48,8 +48,8 @@ Plans:
 - [x] 02-02-PLAN.md — Text extractor (newspaper4k/trafilatura) + OpenCV preprocessor pipeline
 - [x] 02-03-PLAN.md — OCR layer: GLM-OCR primary, Tesseract fallback, OCR queue
 - [x] 02-04-PLAN.md — Obsidian writer: folder creation, note format, metadata.json, duplicate detection
-- [ ] 02-05-PLAN.md — Pipeline orchestrator: archive_url() wires all 5 steps
-- [ ] 02-06-PLAN.md — CLI commands: archive (single + --file) and ocr
+- [x] 02-05-PLAN.md — Pipeline orchestrator: archive_url() wires all 5 steps
+- [x] 02-06-PLAN.md — CLI commands: archive (single + --file) and ocr
 **UI hint**: yes
 
 ### Phase 3: Bulk Search + Batch Archive

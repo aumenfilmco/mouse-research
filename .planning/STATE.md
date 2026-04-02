@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-single-url-archive-pipeline/02-04-PLAN.md
-last_updated: "2026-04-02T13:13:09.529Z"
+stopped_at: Completed 02-single-url-archive-pipeline/02-06-PLAN.md
+last_updated: "2026-04-02T13:23:10.282Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 12
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-01)
 ## Current Position
 
 Phase: 02 (single-url-archive-pipeline) — EXECUTING
-Plan: 6 of 7
+Plan: 7 of 7
 Status: Ready to execute
 Last activity: 2026-04-02
 
@@ -61,6 +61,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-single-url-archive-pipeline P02 | 2min | 2 tasks | 2 files |
 | Phase 02-single-url-archive-pipeline P03 | 54s | 1 tasks | 1 files |
 | Phase 02-single-url-archive-pipeline P04 | 69s | 1 tasks | 1 files |
+| Phase 02-single-url-archive-pipeline P06 | 10min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 - [Phase 02-single-url-archive-pipeline]: response.response attribute (not dict key) used for ollama GenerateResponse — verified against .venv SDK
 - [Phase 02-single-url-archive-pipeline]: preprocess_for_ocr() called unconditionally inside _ocr_with_glm() — cannot be bypassed by callers
 - [Phase 02-single-url-archive-pipeline]: frontmatter.dumps() used (not frontmatter.dump()) — returns string suitable for write_text() workflow
+- [Phase 02-single-url-archive-pipeline]: archive and ocr commands use lazy imports inside function body — consistent with existing install/doctor/login pattern
+- [Phase 02-single-url-archive-pipeline]: _archive_file() continues on failure without raise typer.Exit — failure already logged by archiver to failures.jsonl
 
 ### Pending Todos
 
@@ -97,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-02T13:13:09.527Z
-Stopped at: Completed 02-single-url-archive-pipeline/02-04-PLAN.md
+Last session: 2026-04-02T13:23:10.280Z
+Stopped at: Completed 02-single-url-archive-pipeline/02-06-PLAN.md
 Resume file: None
