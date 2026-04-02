@@ -110,19 +110,19 @@ def _download_page_image_via_browser(
 ) -> bool:
     """Download a page image using the authenticated browser context.
 
-    Uses Playwright (not httpx) so the browser's session cookies are sent
-    automatically — avoids 403 from img.newspapers.com's Cloudflare protection.
+    Uses context.request.get() (Playwright API request) so the browser's
+    session cookies and auth tokens are sent automatically. This avoids
+    the "Download is starting" error from page.goto() on direct image URLs.
 
     Returns True on success, False on failure.
     """
     try:
-        img_page = context.new_page()
-        response = img_page.goto(image_url, wait_until="load", timeout=30000)
-        if response and response.ok:
-            output_path.write_bytes(response.body())
-            img_page.close()
-            return True
-        img_page.close()
+        response = context.request.get(image_url, timeout=30000)
+        if response.ok:
+            body = response.body()
+            if body[:2] == b"\xff\xd8":  # JPEG magic bytes
+                output_path.write_bytes(body)
+                return True
     except Exception:
         pass
     return False
@@ -400,12 +400,18 @@ def fetch_url(
             page_jpg_path = output_dir / "page_image.jpg"
             image_url_to_download: str | None = None
 
-            # Always prefer the constructed full-res URL (width=2000) over
-            # intercepted URLs which may be thumbnails
-            image_url_to_download = _construct_fallback_image_url(url)
-            if not image_url_to_download and intercepted_image_urls:
-                # Pick the URL with the largest width param, or last loaded
-                image_url_to_download = intercepted_image_urls[-1]
+            # Intercepted tile URLs have auth tokens (iat=JWT) required by CDN.
+            # Take any tile URL, strip crop, bump to full-res dimensions.
+            image_url_to_download = None
+            if intercepted_image_urls:
+                tile_url = intercepted_image_urls[0]
+                full_url = re.sub(r"width=\d+", "width=2000", tile_url)
+                full_url = re.sub(r"height=\d+", "height=3000", full_url)
+                full_url = re.sub(r"&crop=[^&]+", "", full_url)
+                image_url_to_download = full_url
+            if not image_url_to_download:
+                # Fallback (no auth token — may 403)
+                image_url_to_download = _construct_fallback_image_url(url)
 
             if image_url_to_download:
                 # Use browser context (not httpx) to carry session cookies
