@@ -33,8 +33,11 @@ class FetchError(Exception):
 class BrowserSession:
     """Persistent browser session for batch fetching.
 
+    Uses Chrome's real user profile to avoid Cloudflare detection.
+    Chrome must be fully closed before starting (profile is locked while running).
+
     Keeps one browser + context alive across multiple fetch_url calls so
-    Cloudflare only challenges once per batch instead of per article.
+    Cloudflare only challenges once (if at all) per batch.
 
     Usage:
         with BrowserSession(config) as session:
@@ -45,53 +48,42 @@ class BrowserSession:
     def __init__(self, config: AppConfig) -> None:
         self.config = config
         self._pw = None
-        self._browser = None
-        self._contexts: dict[str, object] = {}  # domain -> BrowserContext
+        self._context = None  # persistent context acts as both browser + context
 
     def __enter__(self):
+        import os
         self._pw = sync_playwright().start()
-        self._browser = self._pw.chromium.launch(
+        chrome_profile = os.path.expanduser(
+            "~/Library/Application Support/Google/Chrome"
+        )
+        self._context = self._pw.chromium.launch_persistent_context(
+            chrome_profile,
             headless=self.config.browser.headless,
             channel="chrome",
-            args=["--disable-blink-features=AutomationControlled"],
+            args=[
+                "--disable-blink-features=AutomationControlled",
+                "--profile-directory=Default",
+            ],
+        )
+        # Remove webdriver flag
+        self._context.add_init_script(
+            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
         )
         return self
 
     def __exit__(self, *exc):
-        if self._browser:
-            self._browser.close()
+        if self._context:
+            self._context.close()
         if self._pw:
             self._pw.stop()
-        self._contexts.clear()
 
     def get_context(self, domain: str):
-        """Get or create a browser context for the given domain."""
-        if domain in self._contexts:
-            return self._contexts[domain]
-
-        storage = load_cookies(domain)
-        context_kwargs = {
-            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-        }
-        if storage:
-            context_kwargs["storage_state"] = storage
-
-        ctx = self._browser.new_context(**context_kwargs)
-        ctx.add_init_script(
-            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
-        )
-        self._contexts[domain] = ctx
-        return ctx
+        """Return the persistent context (same for all domains — uses Chrome's real cookies)."""
+        return self._context
 
     def save_cookies(self, domain: str) -> None:
-        """Persist cookies for a domain (call after successful page load)."""
-        ctx = self._contexts.get(domain)
-        if ctx:
-            from mouse_research.cookies import cookie_path
-            path = cookie_path(domain)
-            path.parent.mkdir(parents=True, exist_ok=True)
-            ctx.storage_state(path=str(path))
+        """No-op — persistent context manages its own cookies."""
+        pass
 
 
 def _is_newspapers_com(url: str) -> bool:
