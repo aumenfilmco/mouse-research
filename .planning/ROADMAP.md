@@ -62,7 +62,10 @@ Plans:
   3. From interactive review mode, the user can enter selections like `1,3,5-12,all` and those articles are archived with progress display
   4. `mouse-research search "<query>" --auto-archive` archives all results in a single unattended batch with 5-second rate limiting, a progress bar, and a completion summary showing archived/failed counts
   5. `mouse-research retry-failures` reads failures.jsonl and reprocesses failed URLs
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 03-01-PLAN.md — Searcher module: scraper subprocess, result parsing, dedup filtering, location mapping, selection parsing
+- [ ] 03-02-PLAN.md — CLI commands: search (interactive + auto-archive) and retry-failures with Rich progress
 
 ### Phase 4: Research Graph + Hardening
 **Goal**: Every archived article automatically updates the relevant People notes, Source notes, and master index; failed batches can be retried; and the system prompts for re-login when a session expires mid-run
@@ -83,5 +86,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation + Validation | 2/5 | In Progress|  |
 | 2. Single-URL Archive Pipeline | 5/7 | In Progress|  |
-| 3. Bulk Search + Batch Archive | 0/? | Not started | - |
+| 3. Bulk Search + Batch Archive | 0/2 | Not started | - |
 | 4. Research Graph + Hardening | 0/? | Not started | - |
