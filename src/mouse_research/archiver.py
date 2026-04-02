@@ -20,7 +20,7 @@ from typing import Optional
 
 from mouse_research.config import AppConfig
 from mouse_research.extractor import detect_date, detect_source, extract_text
-from mouse_research.fetcher import FetchError, fetch_url
+from mouse_research.fetcher import BrowserSession, FetchError, fetch_url
 from mouse_research.logger import get_logger, log_failure
 from mouse_research.obsidian import (
     create_article_folder,
@@ -54,6 +54,7 @@ def archive_url(
     config: AppConfig,
     person: list[str] | None = None,
     tags: list[str] | None = None,
+    session: BrowserSession | None = None,
 ) -> ArchiveResult:
     """Archive a single URL into the Obsidian vault.
 
@@ -93,7 +94,7 @@ def archive_url(
 
             # Step 1: Fetch
             logger.info("Step 1: Fetching %s", url)
-            fetch_result = fetch_url(url, config, tmp_path)
+            fetch_result = fetch_url(url, config, tmp_path, session=session)
 
             # Step 2: Extract text, source, date
             logger.info("Step 2: Extracting text")

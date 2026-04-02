@@ -298,13 +298,14 @@ def _batch_archive_with_progress(
     """Archive a list of (url, title) pairs with a Rich Progress bar and rate limiting."""
     import time
     from mouse_research.archiver import archive_url
+    from mouse_research.fetcher import BrowserSession
     from rich.progress import Progress, SpinnerColumn, BarColumn, TaskProgressColumn, TextColumn
 
     archived = 0
     failed = 0
 
     try:
-        with Progress(
+        with BrowserSession(config) as session, Progress(
             SpinnerColumn(),
             BarColumn(),
             TaskProgressColumn(),
@@ -318,7 +319,7 @@ def _batch_archive_with_progress(
                     time.sleep(config.rate_limit_seconds)
                 desc = title[:50] + "..." if len(title) > 50 else title
                 progress.update(task, description=desc)
-                result = archive_url(url, config, person=persons, tags=tags)
+                result = archive_url(url, config, person=persons, tags=tags, session=session)
                 if result.error:
                     failed += 1
                 else:
@@ -400,6 +401,7 @@ def retry_failures(
     from mouse_research.config import get_config
     from mouse_research.logger import setup_logging, FAILURE_LOG
     from mouse_research.archiver import archive_url
+    from mouse_research.fetcher import BrowserSession
     from rich.progress import Progress, SpinnerColumn, BarColumn, TaskProgressColumn, TextColumn
 
     setup_logging(verbose=verbose)
@@ -433,7 +435,7 @@ def retry_failures(
     still_failed: list[dict] = []
     archived = 0
 
-    with Progress(
+    with BrowserSession(config) as session, Progress(
         SpinnerColumn(),
         BarColumn(),
         TaskProgressColumn(),
@@ -447,7 +449,7 @@ def retry_failures(
                 time.sleep(config.rate_limit_seconds)
             desc = record.get("reason", "")[:50]
             progress.update(task, description=desc)
-            result = archive_url(record["url"], config)
+            result = archive_url(record["url"], config, session=session)
             if result.skipped:
                 archived += 1
             elif result.error or not result.success:

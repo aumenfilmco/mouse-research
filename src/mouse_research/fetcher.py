@@ -30,6 +30,70 @@ class FetchError(Exception):
         super().__init__(f"FetchError for {url}: {reason}")
 
 
+class BrowserSession:
+    """Persistent browser session for batch fetching.
+
+    Keeps one browser + context alive across multiple fetch_url calls so
+    Cloudflare only challenges once per batch instead of per article.
+
+    Usage:
+        with BrowserSession(config) as session:
+            for url in urls:
+                result = fetch_url(url, config, output_dir, session=session)
+    """
+
+    def __init__(self, config: AppConfig) -> None:
+        self.config = config
+        self._pw = None
+        self._browser = None
+        self._contexts: dict[str, object] = {}  # domain -> BrowserContext
+
+    def __enter__(self):
+        self._pw = sync_playwright().start()
+        self._browser = self._pw.chromium.launch(
+            headless=self.config.browser.headless,
+            channel="chrome",
+            args=["--disable-blink-features=AutomationControlled"],
+        )
+        return self
+
+    def __exit__(self, *exc):
+        if self._browser:
+            self._browser.close()
+        if self._pw:
+            self._pw.stop()
+        self._contexts.clear()
+
+    def get_context(self, domain: str):
+        """Get or create a browser context for the given domain."""
+        if domain in self._contexts:
+            return self._contexts[domain]
+
+        storage = load_cookies(domain)
+        context_kwargs = {
+            "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                          "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        }
+        if storage:
+            context_kwargs["storage_state"] = storage
+
+        ctx = self._browser.new_context(**context_kwargs)
+        ctx.add_init_script(
+            "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
+        )
+        self._contexts[domain] = ctx
+        return ctx
+
+    def save_cookies(self, domain: str) -> None:
+        """Persist cookies for a domain (call after successful page load)."""
+        ctx = self._contexts.get(domain)
+        if ctx:
+            from mouse_research.cookies import cookie_path
+            path = cookie_path(domain)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            ctx.storage_state(path=str(path))
+
+
 def _is_newspapers_com(url: str) -> bool:
     return "newspapers.com" in url.lower()
 
@@ -169,7 +233,12 @@ def _crop_article_image(
     return output_path
 
 
-def fetch_url(url: str, config: AppConfig, output_dir: Path) -> FetchResult:
+def fetch_url(
+    url: str,
+    config: AppConfig,
+    output_dir: Path,
+    session: BrowserSession | None = None,
+) -> FetchResult:
     """Fetch a page and return raw artifacts.
 
     For Newspapers.com URLs: also extracts and crops the page image.
@@ -179,131 +248,162 @@ def fetch_url(url: str, config: AppConfig, output_dir: Path) -> FetchResult:
         url: The article URL to fetch
         config: AppConfig with browser settings and OCR settings
         output_dir: Directory to save screenshot and image files (must exist)
+        session: Optional BrowserSession for reusing browser across batch fetches.
+                 If None, a one-shot browser is created and closed after this fetch.
 
     Returns:
         FetchResult with all captured artifacts
     """
     is_ncm = _is_newspapers_com(url)
     domain = _extract_domain(url)
-    storage = load_cookies(domain)
 
     screenshot_path = output_dir / "screenshot.png"
     page_image_path: Path | None = None
     article_image_path: Path | None = None
 
+    # Use persistent session or create a one-shot browser
+    own_browser = session is None
+
     try:
-        with sync_playwright() as p:
-            # CRITICAL: channel="chrome" required on macOS (Phase 1 finding)
-            browser = p.chromium.launch(
+        if own_browser:
+            _pw_ctx = sync_playwright().start()
+            browser = _pw_ctx.chromium.launch(
                 headless=config.browser.headless,
                 channel="chrome",
-                args=[
-                    "--disable-blink-features=AutomationControlled",
-                ],
+                args=["--disable-blink-features=AutomationControlled"],
             )
-
+            storage = load_cookies(domain)
             context_kwargs: dict = {
-                "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                              "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
             }
             if storage:
                 context_kwargs["storage_state"] = storage
-
             context = browser.new_context(**context_kwargs)
             context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-            page = context.new_page()
+        else:
+            _pw_ctx = None
+            browser = None
+            context = session.get_context(domain)
 
-            # For Newspapers.com: intercept the full-page JPG URL before navigation
-            intercepted_image_urls: list[str] = []
+        page = context.new_page()
 
-            if is_ncm:
-                def capture_image(response) -> None:
-                    if (
-                        "img.newspapers.com" in response.url
-                        and response.status == 200
-                    ):
-                        ct = response.headers.get("content-type", "")
-                        if "image" in ct and not intercepted_image_urls:
-                            intercepted_image_urls.append(response.url)
+        # For Newspapers.com: intercept the full-page JPG URL before navigation
+        intercepted_image_urls: list[str] = []
 
-                page.on("response", capture_image)
+        if is_ncm:
+            def capture_image(response) -> None:
+                if (
+                    "img.newspapers.com" in response.url
+                    and response.status == 200
+                ):
+                    ct = response.headers.get("content-type", "")
+                    if "image" in ct and not intercepted_image_urls:
+                        intercepted_image_urls.append(response.url)
 
-            page.goto(url, wait_until="domcontentloaded", timeout=60000)
-            page.wait_for_timeout(3000)
+            page.on("response", capture_image)
 
-            # Check for Cloudflare challenge
-            try:
-                html = page.content()
-            except Exception:
-                html = ""
+        page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        page.wait_for_timeout(3000)
 
-            if _detect_cloudflare(html):
-                if config.browser.headless:
+        # Check for Cloudflare challenge
+        try:
+            html = page.content()
+        except Exception:
+            html = ""
+
+        if _detect_cloudflare(html):
+            if config.browser.headless:
+                if own_browser:
                     browser.close()
-                    raise FetchError(
-                        url,
-                        "Cloudflare challenge detected in headless mode. "
-                        "Set browser.headless=false in config or run: mouse-research login newspapers.com"
-                    )
-                # Non-headless: user can see the Chrome window — wait for them
-                from rich.console import Console as _Con
-                _Con().print(
-                    "[yellow]Cloudflare challenge detected in the Chrome window. "
-                    "Please solve it (click 'Verify you are human'), then wait...[/yellow]"
+                    _pw_ctx.stop()
+                raise FetchError(
+                    url,
+                    "Cloudflare challenge detected in headless mode. "
+                    "Set browser.headless=false in config or run: mouse-research login newspapers.com"
                 )
-                # Poll until Cloudflare resolves (up to 60s)
-                for _attempt in range(12):
-                    page.wait_for_timeout(5000)
-                    try:
-                        html = page.content()
-                    except Exception:
-                        continue
-                    if not _detect_cloudflare(html):
-                        break
-                else:
+            # Non-headless: user can see the Chrome window — wait for them
+            from rich.console import Console as _Con
+            _Con().print(
+                "[yellow]Cloudflare challenge detected in the Chrome window. "
+                "Please solve it (click 'Verify you are human'), then wait...[/yellow]"
+            )
+            # Poll until Cloudflare resolves (up to 60s)
+            for _attempt in range(12):
+                page.wait_for_timeout(5000)
+                try:
+                    html = page.content()
+                except Exception:
+                    continue
+                if not _detect_cloudflare(html):
+                    break
+            else:
+                if own_browser:
                     browser.close()
-                    raise FetchError(
-                        url,
-                        "Cloudflare challenge not resolved after 60s. "
-                        "Run: mouse-research login newspapers.com"
-                    )
+                    _pw_ctx.stop()
+                raise FetchError(
+                    url,
+                    "Cloudflare challenge not resolved after 60s. "
+                    "Run: mouse-research login newspapers.com"
+                )
 
-            # Capture screenshot and HTML (after Cloudflare check passes)
-            page.screenshot(path=str(screenshot_path), full_page=True)
+        # Capture screenshot and HTML (after Cloudflare check passes)
+        page.screenshot(path=str(screenshot_path), full_page=True)
 
-            # Newspapers.com-specific: download page image and crop article region
-            if is_ncm:
-                page_jpg_path = output_dir / "page_image.jpg"
-                image_url_to_download: str | None = None
+        # Newspapers.com-specific: download page image and crop article region
+        if is_ncm:
+            page_jpg_path = output_dir / "page_image.jpg"
+            image_url_to_download: str | None = None
 
-                if intercepted_image_urls:
-                    image_url_to_download = intercepted_image_urls[0]
-                else:
-                    # Fallback: construct URL from article URL image ID
-                    image_url_to_download = _construct_fallback_image_url(url)
+            if intercepted_image_urls:
+                image_url_to_download = intercepted_image_urls[0]
+            else:
+                # Fallback: construct URL from article URL image ID
+                image_url_to_download = _construct_fallback_image_url(url)
 
-                if image_url_to_download:
-                    # Use browser context (not httpx) to carry session cookies
-                    success = _download_page_image_via_browser(
-                        image_url_to_download,
+            if image_url_to_download:
+                # Use browser context (not httpx) to carry session cookies
+                success = _download_page_image_via_browser(
+                    image_url_to_download,
+                    page_jpg_path,
+                    context,
+                )
+                if success:
+                    page_image_path = page_jpg_path
+                    article_jpg_path = output_dir / "article_image.jpg"
+                    article_image_path = _crop_article_image(
                         page_jpg_path,
-                        context,
+                        page,
+                        article_jpg_path,
                     )
-                    if success:
-                        page_image_path = page_jpg_path
-                        article_jpg_path = output_dir / "article_image.jpg"
-                        article_image_path = _crop_article_image(
-                            page_jpg_path,
-                            page,
-                            article_jpg_path,
-                        )
 
-            # Refresh cookies on successful authenticated load
+        # Refresh cookies on successful authenticated load
+        if own_browser:
+            storage = load_cookies(domain)
             if storage:
                 context.storage_state(path=storage)
-
             browser.close()
+            _pw_ctx.stop()
+        else:
+            session.save_cookies(domain)
+            page.close()
 
     except Exception as exc:
+        if own_browser and browser:
+            try:
+                browser.close()
+            except Exception:
+                pass
+            if _pw_ctx:
+                try:
+                    _pw_ctx.stop()
+                except Exception:
+                    pass
+        elif session and page:
+            try:
+                page.close()
+            except Exception:
+                pass
         raise FetchError(url, str(exc)) from exc
 
     return FetchResult(
