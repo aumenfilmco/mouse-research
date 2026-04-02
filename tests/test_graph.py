@@ -316,7 +316,23 @@ def test_regenerate_index_index_has_title_and_date(tmp_path):
 def test_update_graph_calls_all_operations(tmp_path):
     """update_graph creates People note, Source note, and index."""
     from mouse_research.config import AppConfig, VaultSettings
-    config = AppConfig(vault=VaultSettings(path=str(tmp_path)))
+    from pydantic_settings import PydanticBaseSettingsSource
+
+    # Use TestConfig subclass that puts init_settings first so constructor
+    # kwargs override any existing config.yaml — same pattern as Phase 1 tests.
+    class TestConfig(AppConfig):
+        @classmethod
+        def settings_customise_sources(
+            cls,
+            settings_cls,
+            init_settings: PydanticBaseSettingsSource,
+            env_settings: PydanticBaseSettingsSource,
+            dotenv_settings: PydanticBaseSettingsSource,
+            file_secret_settings: PydanticBaseSettingsSource,
+        ):
+            return (init_settings,)
+
+    config = TestConfig(vault=VaultSettings(path=str(tmp_path)))
 
     record = _make_record(person=["Dave Mccollum"], source="Gettysburg Times")
     # Pre-create metadata.json so index has content
@@ -333,9 +349,22 @@ def test_update_graph_calls_all_operations(tmp_path):
 def test_update_graph_does_not_raise_on_failure(tmp_path, monkeypatch):
     """update_graph swallows exceptions from sub-operations — non-fatal."""
     from mouse_research.config import AppConfig, VaultSettings
+    from pydantic_settings import PydanticBaseSettingsSource
     import mouse_research.graph as graph_module
 
-    config = AppConfig(vault=VaultSettings(path=str(tmp_path)))
+    class TestConfig(AppConfig):
+        @classmethod
+        def settings_customise_sources(
+            cls,
+            settings_cls,
+            init_settings: PydanticBaseSettingsSource,
+            env_settings: PydanticBaseSettingsSource,
+            dotenv_settings: PydanticBaseSettingsSource,
+            file_secret_settings: PydanticBaseSettingsSource,
+        ):
+            return (init_settings,)
+
+    config = TestConfig(vault=VaultSettings(path=str(tmp_path)))
     record = _make_record(person=["Dave Mccollum"])
 
     # Make update_people_notes raise
