@@ -114,3 +114,14 @@ def test_analyze_article_skips_already_analyzed(tmp_path):
 
     result = analyze_article(article_dir, ollama_url="http://localhost:11434")
     assert result is False
+
+
+from typer.testing import CliRunner
+from mouse_research.cli import app
+
+runner = CliRunner()
+
+def test_analyze_command_exists():
+    result = runner.invoke(app, ["analyze", "--help"])
+    assert result.exit_code == 0
+    assert "Process archived articles through Gemma 4" in result.output

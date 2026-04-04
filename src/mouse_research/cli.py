@@ -488,5 +488,91 @@ def graph(
     console.print("[green]Index rebuilt:[/green] Research/Articles/_index.md")
 
 
+@app.command()
+def analyze(
+    limit: Optional[int] = typer.Option(None, "--limit", help="Process only N articles (default: all unanalyzed)"),
+    force: bool = typer.Option(False, "--force", help="Re-analyze already-analyzed articles"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable debug logging"),
+):
+    """Process archived articles through Gemma 4 for OCR cleanup and metadata extraction."""
+    from mouse_research.config import get_config
+    from mouse_research.logger import setup_logging
+    from mouse_research.analyzer import analyze_article
+    from rich.progress import Progress, SpinnerColumn, BarColumn, TaskProgressColumn, TextColumn
+
+    setup_logging(verbose=verbose)
+    config = get_config()
+
+    articles_dir = Path(config.vault.path) / "Articles"
+    if not articles_dir.exists():
+        console.print("[red]No Articles directory found in vault.[/red]")
+        raise typer.Exit(code=1)
+
+    # Gather article directories (exclude _index.md and other non-directories)
+    article_dirs = sorted(
+        [d for d in articles_dir.iterdir() if d.is_dir()],
+        key=lambda d: d.name,
+    )
+
+    if limit:
+        # When using --limit, filter to unanalyzed first (unless --force)
+        if not force:
+            import json as _json
+            unanalyzed = []
+            for d in article_dirs:
+                meta_path = d / "metadata.json"
+                if meta_path.exists():
+                    meta = _json.loads(meta_path.read_text(encoding="utf-8"))
+                    if not meta.get("analyzed"):
+                        unanalyzed.append(d)
+                else:
+                    unanalyzed.append(d)
+            article_dirs = unanalyzed[:limit]
+        else:
+            article_dirs = article_dirs[:limit]
+
+    if not article_dirs:
+        console.print("[yellow]No articles to analyze.[/yellow]")
+        return
+
+    console.print(f"Analyzing [bold]{len(article_dirs)}[/bold] articles with Gemma 4...")
+
+    analyzed = 0
+    skipped = 0
+    failed = 0
+
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TaskProgressColumn(),
+        TextColumn("[cyan]{task.fields[status]}"),
+    ) as progress:
+        task = progress.add_task("Analyzing", total=len(article_dirs), status="starting...")
+
+        for article_dir in article_dirs:
+            progress.update(task, status=article_dir.name[:40])
+            try:
+                result = analyze_article(
+                    article_dir,
+                    ollama_url=config.ocr.ollama_url,
+                    force=force,
+                )
+                if result:
+                    analyzed += 1
+                else:
+                    skipped += 1
+            except Exception as e:
+                console.print(f"[red]Error analyzing {article_dir.name}: {e}[/red]")
+                failed += 1
+            progress.advance(task)
+
+    console.print(
+        f"\nDone: [green]{analyzed} analyzed[/green], "
+        f"[yellow]{skipped} skipped[/yellow], "
+        f"[red]{failed} failed[/red]"
+    )
+
+
 if __name__ == "__main__":
     app()
