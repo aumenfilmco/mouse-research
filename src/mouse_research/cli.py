@@ -574,5 +574,20 @@ def analyze(
     )
 
 
+@app.command()
+def ui():
+    """Launch the Streamlit web interface."""
+    import subprocess
+    import sys
+
+    app_path = Path(__file__).parent.parent.parent / "app.py"
+    if not app_path.exists():
+        console.print(f"[red]app.py not found at {app_path}[/red]")
+        raise typer.Exit(code=1)
+
+    console.print(f"Starting MOUSE Research UI at [bold]http://localhost:8501[/bold]")
+    subprocess.run([sys.executable, "-m", "streamlit", "run", str(app_path)])
+
+
 if __name__ == "__main__":
     app()
