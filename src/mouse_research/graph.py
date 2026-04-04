@@ -187,12 +187,12 @@ def regenerate_index(vault_path: str) -> None:
     # Sort all records reverse-chronological
     records.sort(key=lambda r: r.get("date") or "0000-00-00", reverse=True)
 
-    # Group by person
+    # Group by person — merge original "person" list with analysis "people" list
     by_person: dict[str, list[dict]] = defaultdict(list)
     for r in records:
-        persons = r.get("person") or []
-        if persons:
-            for p in persons:
+        all_persons = list(dict.fromkeys((r.get("person") or []) + (r.get("people") or [])))
+        if all_persons:
+            for p in all_persons:
                 by_person[p].append(r)
         else:
             by_person["__unlinked__"].append(r)
@@ -214,7 +214,7 @@ def regenerate_index(vault_path: str) -> None:
         lines.append("")
         for r in articles_sorted:
             slug = r.get("slug", "unknown")
-            title = r.get("title") or slug
+            title = r.get("headline") or r.get("title") or slug
             date_val = r.get("date") or "undated"
             source = r.get("source") or ""
             lines.append(f"- [[{slug}|{title}]] ({source}, {date_val})")
@@ -229,7 +229,7 @@ def regenerate_index(vault_path: str) -> None:
         lines.append("")
         for r in unlinked_sorted:
             slug = r.get("slug", "unknown")
-            title = r.get("title") or slug
+            title = r.get("headline") or r.get("title") or slug
             date_val = r.get("date") or "undated"
             source = r.get("source") or ""
             lines.append(f"- [[{slug}|{title}]] ({source}, {date_val})")
