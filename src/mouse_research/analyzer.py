@@ -33,12 +33,12 @@ The OCR has many errors. Please:
 2. "McCollum" is the correct spelling of the Bermudian Springs wrestling coach (OCR often garbles it as "McCullum", "McCullom", etc.)
 3. "Bermudian Springs" is the correct school name (OCR often drops the "s")
 4. High school wrestling weight classes are: 103, 112, 119, 125, 130, 135, 140, 145, 152, 160, 171, 189, 215, 275
-5. After the corrected text, provide these fields on separate lines:
+5. After the corrected text, provide these fields on separate lines. Be concise and definitive — do not hedge or add parenthetical qualifiers:
 
-HEADLINE: the actual article headline (not a byline like "BY DAN CHRIST")
+HEADLINE: the best headline you can extract or construct (short, no commentary)
 PEOPLE: comma-separated list of all people mentioned (use corrected names)
 SCHOOLS: comma-separated list of all schools mentioned
-WRESTLING: yes or no (is this article about wrestling?)
+WRESTLING: yes or no (is this article primarily about wrestling?)
 SUMMARY: one sentence summary of the article
 
 OCR TEXT:
