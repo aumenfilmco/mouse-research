@@ -1,4 +1,8 @@
-from mouse_research.analyzer import build_prompt, parse_response
+import json
+from pathlib import Path
+from unittest.mock import patch, MagicMock
+
+from mouse_research.analyzer import build_prompt, parse_response, analyze_article
 
 
 def test_build_prompt_includes_ocr_text():
@@ -50,3 +54,63 @@ def test_parse_response_handles_no_metadata():
     assert result.schools == []
     assert result.is_wrestling is True
     assert result.summary == ""
+
+
+def test_analyze_article_writes_enriched_note(tmp_path):
+    """Test that analyze_article reads OCR, calls Ollama, and rewrites article.md."""
+    article_dir = tmp_path / "1991-12-05_newspapers-com_test-article"
+    article_dir.mkdir()
+
+    (article_dir / "ocr_raw.md").write_text("McCullum said Bermudian Spring wrestling")
+    (article_dir / "metadata.json").write_text(json.dumps({
+        "url": "https://www.newspapers.com/image/123",
+        "slug": "1991-12-05_newspapers-com_test-article",
+        "source": "Newspapers.com",
+        "date": "1991-12-05",
+        "captured": "2026-04-02",
+        "title": "McCullum",
+        "person": ["Dave McCollum"],
+        "tags": ["newspaper", "archive"],
+        "extraction": "glm-ocr",
+        "ocr_queued": False,
+    }))
+    (article_dir / "article.md").write_text("---\ndate: 1991-12-05\n---\n# Old Title\nold content")
+
+    mock_response = MagicMock()
+    mock_response.response = """McCollum said Bermudian Springs wrestling is well balanced.
+
+HEADLINE: Bermudian Springs Wrestling Preview
+PEOPLE: Dave McCollum
+SCHOOLS: Bermudian Springs
+WRESTLING: yes
+SUMMARY: Preview of the wrestling season."""
+    mock_response.eval_count = 50
+
+    with patch("mouse_research.analyzer.ollama") as mock_ollama:
+        mock_ollama.generate.return_value = mock_response
+        result = analyze_article(article_dir, ollama_url="http://localhost:11434")
+
+    assert result is True
+
+    meta = json.loads((article_dir / "metadata.json").read_text())
+    assert meta["analyzed"] is True
+    assert "Bermudian Springs" in meta["schools"]
+    assert meta["is_wrestling"] is True
+    assert "Bermudian Springs Wrestling Preview" in meta["headline"]
+
+    article_text = (article_dir / "article.md").read_text()
+    assert "[[Dave McCollum]]" in article_text
+    assert "[[Bermudian Springs]]" in article_text
+    assert "## Cleaned Text" in article_text
+    assert "## Original OCR" in article_text
+    assert "McCollum said Bermudian Springs" in article_text
+
+
+def test_analyze_article_skips_already_analyzed(tmp_path):
+    """Articles with analyzed: true in metadata are skipped."""
+    article_dir = tmp_path / "test-article"
+    article_dir.mkdir()
+    (article_dir / "metadata.json").write_text(json.dumps({"analyzed": True}))
+
+    result = analyze_article(article_dir, ollama_url="http://localhost:11434")
+    assert result is False
