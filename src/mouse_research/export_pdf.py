@@ -5,6 +5,18 @@ from pathlib import Path
 from fpdf import FPDF
 
 
+def _sanitize(text: str) -> str:
+    """Replace smart quotes and other Unicode chars that Helvetica can't render."""
+    return (
+        text
+        .replace("\u2018", "'").replace("\u2019", "'")   # smart single quotes
+        .replace("\u201c", '"').replace("\u201d", '"')   # smart double quotes
+        .replace("\u2013", "-").replace("\u2014", "--")   # en/em dashes
+        .replace("\u2026", "...").replace("\u00a0", " ")  # ellipsis, nbsp
+        .replace("\u2022", "*")                           # bullet
+    )
+
+
 class _InterviewPDF(FPDF):
     """Custom PDF with MOUSE branding."""
 
@@ -55,7 +67,7 @@ def generate_interview_pdf(
     pdf.set_font("Helvetica", "B", 11)
     pdf.cell(0, 7, "STORY ARC", new_x="LMARGIN", new_y="NEXT")
     pdf.set_font("Helvetica", "", 10)
-    pdf.multi_cell(0, 5, story_arc)
+    pdf.multi_cell(0, 5, _sanitize(story_arc))
     pdf.ln(6)
 
     # Questions
@@ -65,16 +77,16 @@ def generate_interview_pdf(
 
     for i, q in enumerate(questions, 1):
         pdf.set_font("Helvetica", "B", 10)
-        pdf.multi_cell(0, 5, f"{i}. {q['question']}")
+        pdf.multi_cell(0, 5, _sanitize(f"{i}. {q['question']}"))
         pdf.set_font("Helvetica", "I", 9)
         pdf.set_text_color(100, 100, 100)
         pdf.set_x(pdf.l_margin + 6)
-        pdf.multi_cell(0, 4.5, q['context'])
+        pdf.multi_cell(0, 4.5, _sanitize(q['context']))
         if q.get("fact_check_warning"):
             pdf.set_text_color(200, 120, 0)
             pdf.set_font("Helvetica", "I", 8)
             pdf.set_x(pdf.l_margin + 6)
-            pdf.multi_cell(0, 4, f"* {q['fact_check_warning']}")
+            pdf.multi_cell(0, 4, _sanitize(f"* {q['fact_check_warning']}"))
         pdf.set_text_color(0, 0, 0)
         pdf.ln(3)
 
@@ -89,7 +101,7 @@ def generate_interview_pdf(
         pdf.cell(0, 7, "FACT-CHECK NOTES", new_x="LMARGIN", new_y="NEXT")
         pdf.set_font("Helvetica", "", 9)
         for q_num, warning in warnings:
-            pdf.multi_cell(0, 4.5, f"Q{q_num}: {warning}")
+            pdf.multi_cell(0, 4.5, _sanitize(f"Q{q_num}: {warning}"))
             pdf.ln(1)
 
     # Source articles
@@ -101,7 +113,7 @@ def generate_interview_pdf(
     pdf.cell(0, 7, "SOURCE ARTICLES", new_x="LMARGIN", new_y="NEXT")
     pdf.set_font("Helvetica", "", 9)
     for a in sorted(source_articles, key=lambda x: x.get("date", "")):
-        pdf.cell(0, 4.5, f"  {a.get('date', 'undated')} -- {a.get('headline', 'untitled')}", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 4.5, _sanitize(f"  {a.get('date', 'undated')} -- {a.get('headline', 'untitled')}"), new_x="LMARGIN", new_y="NEXT")
 
     if output_path:
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)

@@ -222,6 +222,7 @@ if generate_clicked:
             st.session_state.interview_result = result
             st.session_state.interview_person = selected_name
             st.session_state.interview_articles = selected_articles_with_text
+            st.session_state._questions_gen_id = st.session_state.get("_questions_gen_id", 0) + 1
             st.session_state.interview_source_articles = [
                 {"date": a.get("date", ""), "headline": a.get("headline") or a.get("title") or a.get("slug", ""), "slug": a.get("slug", "")}
                 for a in selected_articles_with_text
@@ -250,10 +251,17 @@ if "interview_result" in st.session_state and st.session_state.get("interview_pe
 
     st.subheader("Questions")
 
-    # Initialize curation state if needed
-    if "interview_questions" not in st.session_state or st.session_state.get("_questions_person") != selected_name:
+    # Initialize curation state from latest generation result
+    # Use a generation counter to detect new results vs. cached ones
+    current_gen = st.session_state.get("_questions_gen_id", 0)
+    if (
+        "interview_questions" not in st.session_state
+        or st.session_state.get("_questions_person") != selected_name
+        or st.session_state.get("_questions_gen_applied") != current_gen
+    ):
         st.session_state.interview_questions = list(questions)
         st.session_state._questions_person = selected_name
+        st.session_state._questions_gen_applied = current_gen
 
     curated: list[dict] = st.session_state.interview_questions
 
