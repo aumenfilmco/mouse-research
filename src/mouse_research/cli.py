@@ -589,5 +589,35 @@ def ui():
     subprocess.run([sys.executable, "-m", "streamlit", "run", str(app_path)])
 
 
+@app.command()
+def sync(
+    push: bool = typer.Option(False, "--push", help="Commit and push to GitHub after export"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Enable debug logging"),
+):
+    """Export article data to data/articles.json for cloud deployment."""
+    import subprocess
+    from mouse_research.config import get_config
+    from mouse_research.logger import setup_logging
+    from mouse_research.sync import export_articles_json
+
+    setup_logging(verbose=verbose)
+    config = get_config()
+
+    output_path = Path(__file__).parent.parent.parent / "data" / "articles.json"
+    count = export_articles_json(config.vault.path, str(output_path))
+    console.print(f"[green]Exported {count} articles[/green] to {output_path}")
+
+    if push:
+        repo_root = Path(__file__).parent.parent.parent
+        subprocess.run(["git", "add", "data/articles.json"], cwd=repo_root, check=True)
+        subprocess.run(
+            ["git", "commit", "-m", f"data: sync {count} articles for cloud deployment"],
+            cwd=repo_root,
+            check=True,
+        )
+        subprocess.run(["git", "push"], cwd=repo_root, check=True)
+        console.print("[green]Pushed to GitHub.[/green]")
+
+
 if __name__ == "__main__":
     app()
