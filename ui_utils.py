@@ -5,8 +5,15 @@ data/articles.json file (cloud / demo mode).
 """
 import json
 import re
+import sys
 from collections import defaultdict
 from pathlib import Path
+
+# Make src/ importable so `from mouse_research.X import Y` works in both
+# local development and Streamlit Cloud (where the package isn't pip-installed).
+_SRC_DIR = Path(__file__).parent / "src"
+if _SRC_DIR.exists() and str(_SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(_SRC_DIR))
 
 import pandas as pd
 
