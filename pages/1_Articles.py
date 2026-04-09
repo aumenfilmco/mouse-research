@@ -2,7 +2,7 @@
 """Browse and filter archived articles."""
 import streamlit as st
 import pandas as pd
-from ui_utils import get_vault_path, load_articles, articles_to_dataframe
+from ui_utils import get_vault_path, load_articles, articles_to_dataframe, load_article_text
 
 st.set_page_config(page_title="Articles — MOUSE Research", page_icon="📰", layout="wide")
 st.title("📰 Browse Articles")
@@ -72,22 +72,27 @@ if not filtered:
 
 df = articles_to_dataframe(filtered)
 
-# Display table (hide internal columns)
+# Display table with single-row selection — click a row to view details below.
 display_cols = ["Date", "Headline", "Schools", "Wrestling"]
-st.dataframe(
+selection = st.dataframe(
     df[display_cols],
     use_container_width=True,
     hide_index=True,
     height=400,
+    on_select="rerun",
+    selection_mode="single-row",
+    key="articles_table",
 )
+
+selected_rows = selection.selection.rows if selection and selection.selection else []
 
 # --- Detail view ---
 st.subheader("Article Details")
-st.caption("Select a row number to view details")
 
-row_idx = st.number_input("Row #", min_value=0, max_value=len(df) - 1, value=0, step=1)
-
-if row_idx < len(df):
+if not selected_rows:
+    st.caption("Click a row above to view details.")
+else:
+    row_idx = selected_rows[0]
     row = df.iloc[row_idx]
     article = filtered[row_idx]
 
@@ -106,20 +111,8 @@ if row_idx < len(df):
         st.markdown("**Summary**")
         st.write(row["Summary"])
 
-    # Load cleaned text from article directory
-    article_dir = article.get("_dir", "")
-    if article_dir:
-        from pathlib import Path
-        article_md = Path(article_dir) / "article.md"
-        if article_md.exists():
-            with st.expander("Cleaned Text / OCR"):
-                content = article_md.read_text(encoding="utf-8")
-                marker = "## Cleaned Text"
-                idx = content.find(marker)
-                if idx != -1:
-                    end_marker = "## Original OCR"
-                    end_idx = content.find(end_marker, idx)
-                    cleaned = content[idx + len(marker):end_idx].strip() if end_idx != -1 else content[idx + len(marker):].strip()
-                    st.write(cleaned[:2000])
-                else:
-                    st.write("No cleaned text available.")
+    # Load cleaned text — works in both local (vault) and cloud (articles.json) modes.
+    cleaned = load_article_text(article.get("slug", ""), vault_path)
+    if cleaned:
+        with st.expander("Cleaned Text"):
+            st.write(cleaned)
