@@ -1,3 +1,5 @@
+> **STATUS (2026-07-04): Project dormant since April 2026 (one-off interview-prep tool, no sessions in ~3 months).** This file predates that state and is kept as historical reference; do not treat it as an active brief.
+
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
 

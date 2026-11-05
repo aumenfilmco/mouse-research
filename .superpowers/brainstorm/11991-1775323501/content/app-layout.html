@@ -1,0 +1,114 @@
+<h2>MOUSE Research Dashboard — App Layout</h2>
+<p class="subtitle">How should the main navigation work?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Sidebar Navigation</h3>
+      <p>Persistent left sidebar with icons + labels for each section (Dashboard, Articles, Search, Analysis, Graph). Content fills the right side. Classic app layout — always know where you are.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="display:flex;min-height:200px;gap:0">
+          <div style="width:180px;background:#1a1a2e;color:#eee;padding:16px;border-right:1px solid #333">
+            <div style="font-weight:bold;margin-bottom:16px;color:#4fc3f7">🐭 MOUSE</div>
+            <div style="padding:8px;background:#333;border-radius:4px;margin-bottom:4px">📊 Dashboard</div>
+            <div style="padding:8px;margin-bottom:4px;opacity:0.7">📰 Articles</div>
+            <div style="padding:8px;margin-bottom:4px;opacity:0.7">🔍 Search</div>
+            <div style="padding:8px;margin-bottom:4px;opacity:0.7">🤖 Analysis</div>
+            <div style="padding:8px;opacity:0.7">🕸️ Graph</div>
+          </div>
+          <div style="flex:1;padding:20px;background:#f5f5f5">
+            <div style="font-size:18px;font-weight:bold;margin-bottom:12px">Dashboard</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold;color:#4fc3f7">992</div>
+                <div style="font-size:12px;color:#888">Articles</div>
+              </div>
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold;color:#66bb6a">928</div>
+                <div style="font-size:12px;color:#888">Wrestling</div>
+              </div>
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold;color:#ef5350">64</div>
+                <div style="font-size:12px;color:#888">Non-Wrestling</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Tab Navigation (Streamlit Default)</h3>
+      <p>Horizontal tabs across the top. Simpler, more like a web page. Streamlit's native <code>st.tabs()</code> — no custom CSS needed. Faster to build.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="min-height:200px">
+          <div style="padding:12px 20px;background:#1a1a2e;color:white;font-weight:bold">🐭 MOUSE Research Pipeline</div>
+          <div style="display:flex;gap:0;border-bottom:2px solid #ddd;background:white">
+            <div style="padding:12px 20px;border-bottom:2px solid #4fc3f7;color:#4fc3f7;font-weight:bold;margin-bottom:-2px">Dashboard</div>
+            <div style="padding:12px 20px;color:#888">Articles</div>
+            <div style="padding:12px 20px;color:#888">Search</div>
+            <div style="padding:12px 20px;color:#888">Analysis</div>
+            <div style="padding:12px 20px;color:#888">Graph</div>
+          </div>
+          <div style="padding:20px;background:#f5f5f5">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold;color:#4fc3f7">992</div>
+                <div style="font-size:12px;color:#888">Articles</div>
+              </div>
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold;color:#66bb6a">928</div>
+                <div style="font-size:12px;color:#888">Wrestling</div>
+              </div>
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center">
+                <div style="font-size:24px;font-weight:bold;color:#ef5350">64</div>
+                <div style="font-size:12px;color:#888">Non-Wrestling</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Multi-Page App (Streamlit Pages)</h3>
+      <p>Each section is a separate Python file in a <code>pages/</code> folder. Streamlit auto-generates a sidebar with page links. Best for keeping code organized — each page is its own module. My recommendation for this project.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="display:flex;min-height:200px;gap:0">
+          <div style="width:200px;background:white;padding:16px;border-right:1px solid #ddd">
+            <div style="font-size:12px;color:#888;text-transform:uppercase;margin-bottom:8px">MOUSE Research</div>
+            <div style="padding:8px 12px;background:#f0f2f6;border-radius:4px;margin-bottom:2px;font-weight:500">📊 Dashboard</div>
+            <div style="padding:8px 12px;margin-bottom:2px;color:#555">📰 Browse Articles</div>
+            <div style="padding:8px 12px;margin-bottom:2px;color:#555">🔍 New Search</div>
+            <div style="padding:8px 12px;margin-bottom:2px;color:#555">🤖 Run Analysis</div>
+            <div style="padding:8px 12px;color:#555">🕸️ Research Graph</div>
+          </div>
+          <div style="flex:1;padding:20px;background:#fafafa">
+            <div style="font-size:20px;font-weight:bold;margin-bottom:16px">📊 Dashboard</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center;border:1px solid #eee">
+                <div style="font-size:24px;font-weight:bold;color:#4fc3f7">992</div>
+                <div style="font-size:12px;color:#888">Articles</div>
+              </div>
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center;border:1px solid #eee">
+                <div style="font-size:24px;font-weight:bold;color:#66bb6a">928</div>
+                <div style="font-size:12px;color:#888">Wrestling</div>
+              </div>
+              <div style="background:white;padding:16px;border-radius:8px;text-align:center;border:1px solid #eee">
+                <div style="font-size:24px;font-weight:bold;color:#ef5350">64</div>
+                <div style="font-size:12px;color:#888">Non-Wrestling</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

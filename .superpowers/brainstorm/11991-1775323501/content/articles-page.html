@@ -1,0 +1,155 @@
+<h2>Browse Articles — Page Layout</h2>
+<p class="subtitle">Which layout works best for reviewing 992 newspaper articles?</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Table + Expandable Rows</h3>
+      <p>Sortable/filterable table showing headline, date, school, wrestling flag. Click a row to expand and see summary + cleaned text inline. Compact — see many articles at once.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="background:#fafafa;padding:16px">
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <div style="background:white;border:1px solid #ddd;border-radius:4px;padding:6px 12px;font-size:12px;flex:1">🔍 Filter by keyword...</div>
+            <div style="background:white;border:1px solid #ddd;border-radius:4px;padding:6px 12px;font-size:12px">Wrestling: All ▾</div>
+            <div style="background:white;border:1px solid #ddd;border-radius:4px;padding:6px 12px;font-size:12px">School: All ▾</div>
+            <div style="background:white;border:1px solid #ddd;border-radius:4px;padding:6px 12px;font-size:12px">Years: 1977-2025 ▾</div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;background:white;font-size:13px">
+            <tr style="background:#f0f2f6;font-weight:bold">
+              <td style="padding:8px;border-bottom:1px solid #ddd">Date</td>
+              <td style="padding:8px;border-bottom:1px solid #ddd">Headline</td>
+              <td style="padding:8px;border-bottom:1px solid #ddd">Schools</td>
+              <td style="padding:8px;border-bottom:1px solid #ddd">🤼</td>
+            </tr>
+            <tr style="background:#e3f2fd;cursor:pointer">
+              <td style="padding:8px;border-bottom:1px solid #eee">1991-12-05</td>
+              <td style="padding:8px;border-bottom:1px solid #eee;font-weight:500">Eagles Team Well Balanced</td>
+              <td style="padding:8px;border-bottom:1px solid #eee">Bermudian Springs</td>
+              <td style="padding:8px;border-bottom:1px solid #eee">✅</td>
+            </tr>
+            <tr>
+              <td colspan="4" style="padding:12px 20px;background:#f8f9fa;border-bottom:1px solid #ddd;font-size:12px">
+                <b>Summary:</b> Preview of the 1991 Bermudian Springs Eagles wrestling season highlighting team balance.<br>
+                <b>People:</b> Dave McCollum, Dan Christ, Brandon Dawell<br>
+                <div style="margin-top:8px;padding:8px;background:white;border-radius:4px;max-height:100px;overflow:hidden;font-size:11px;color:#555">
+                  BY DAN CHRIST, Times Correspondent. Although Bermudian Springs is not a returning regional champion, don't worry for the Eagles; the team is well balanced...
+                </div>
+              </td>
+            </tr>
+            <tr style="cursor:pointer">
+              <td style="padding:8px;border-bottom:1px solid #eee">1992-01-24</td>
+              <td style="padding:8px;border-bottom:1px solid #eee">Mounties Top Eagles in Dual Meet</td>
+              <td style="padding:8px;border-bottom:1px solid #eee">Bermudian Springs, Mt. Carmel</td>
+              <td style="padding:8px;border-bottom:1px solid #eee">✅</td>
+            </tr>
+            <tr style="cursor:pointer;opacity:0.6">
+              <td style="padding:8px;border-bottom:1px solid #eee">1980-11-01</td>
+              <td style="padding:8px;border-bottom:1px solid #eee">West Chester Wins in College Football</td>
+              <td style="padding:8px;border-bottom:1px solid #eee">West Chester, East Stroudsburg</td>
+              <td style="padding:8px;border-bottom:1px solid #eee">⚠️</td>
+            </tr>
+          </table>
+          <div style="text-align:center;padding:8px;font-size:12px;color:#888">Showing 3 of 992 articles</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Card Grid</h3>
+      <p>Each article is a card showing headline, date, summary snippet, and tags. More visual, but see fewer articles at once. Good for browsing, less good for bulk review.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="background:#fafafa;padding:16px">
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <div style="background:white;border:1px solid #ddd;border-radius:4px;padding:6px 12px;font-size:12px;flex:1">🔍 Filter by keyword...</div>
+            <div style="background:white;border:1px solid #ddd;border-radius:4px;padding:6px 12px;font-size:12px">Wrestling ▾</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="background:white;border:1px solid #ddd;border-radius:8px;padding:16px">
+              <div style="font-size:11px;color:#888">1991-12-05 • Bermudian Springs</div>
+              <div style="font-weight:bold;margin:4px 0">Eagles Team Well Balanced</div>
+              <div style="font-size:12px;color:#555;margin-bottom:8px">Preview of the 1991 season highlighting team balance and key wrestlers...</div>
+              <div style="display:flex;gap:4px">
+                <span style="background:#e3f2fd;color:#1976d2;padding:2px 8px;border-radius:12px;font-size:10px">wrestling</span>
+                <span style="background:#e8f5e9;color:#388e3c;padding:2px 8px;border-radius:12px;font-size:10px">Dave McCollum</span>
+              </div>
+            </div>
+            <div style="background:white;border:1px solid #ddd;border-radius:8px;padding:16px">
+              <div style="font-size:11px;color:#888">1992-01-24 • Bermudian Springs</div>
+              <div style="font-weight:bold;margin:4px 0">Mounties Top Eagles</div>
+              <div style="font-size:12px;color:#555;margin-bottom:8px">Mt. Carmel defeats Bermudian Springs in a closely contested dual meet...</div>
+              <div style="display:flex;gap:4px">
+                <span style="background:#e3f2fd;color:#1976d2;padding:2px 8px;border-radius:12px;font-size:10px">wrestling</span>
+              </div>
+            </div>
+            <div style="background:white;border:1px solid #ddd;border-radius:8px;padding:16px;opacity:0.6">
+              <div style="font-size:11px;color:#888">1980-11-01 • West Chester</div>
+              <div style="font-weight:bold;margin:4px 0">West Chester Wins in Football</div>
+              <div style="font-size:12px;color:#555;margin-bottom:8px">College football recap...</div>
+              <div style="display:flex;gap:4px">
+                <span style="background:#fff3e0;color:#e65100;padding:2px 8px;border-radius:12px;font-size:10px">⚠️ not wrestling</span>
+              </div>
+            </div>
+            <div style="background:white;border:1px solid #ddd;border-radius:8px;padding:16px">
+              <div style="font-size:11px;color:#888">1990-05-05 • Bermudian Springs</div>
+              <div style="font-weight:bold;margin:4px 0">Wrestling Camp Set for June</div>
+              <div style="font-size:12px;color:#555;margin-bottom:8px">Blue Mountain Wrestling Camp announced...</div>
+              <div style="display:flex;gap:4px">
+                <span style="background:#e3f2fd;color:#1976d2;padding:2px 8px;border-radius:12px;font-size:10px">wrestling</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>List + Detail Panel</h3>
+      <p>Left side: scrollable list of articles (headline + date). Right side: full detail view of selected article (summary, cleaned text, people, schools, screenshot). Email-client style — best for reading through articles one by one.</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-body" style="display:flex;min-height:250px;gap:0;background:#fafafa">
+          <div style="width:280px;background:white;border-right:1px solid #ddd;overflow:hidden">
+            <div style="padding:8px;border-bottom:1px solid #eee">
+              <div style="background:#f0f2f6;border-radius:4px;padding:6px;font-size:11px">🔍 Search articles...</div>
+            </div>
+            <div style="padding:10px 12px;background:#e3f2fd;border-left:3px solid #1976d2;cursor:pointer">
+              <div style="font-size:11px;color:#888">1991-12-05</div>
+              <div style="font-size:13px;font-weight:500">Eagles Team Well Balanced</div>
+            </div>
+            <div style="padding:10px 12px;border-bottom:1px solid #f0f0f0;cursor:pointer">
+              <div style="font-size:11px;color:#888">1992-01-24</div>
+              <div style="font-size:13px">Mounties Top Eagles</div>
+            </div>
+            <div style="padding:10px 12px;border-bottom:1px solid #f0f0f0;cursor:pointer;opacity:0.6">
+              <div style="font-size:11px;color:#e65100">⚠️ 1980-11-01</div>
+              <div style="font-size:13px">West Chester Wins</div>
+            </div>
+            <div style="padding:10px 12px;border-bottom:1px solid #f0f0f0;cursor:pointer">
+              <div style="font-size:11px;color:#888">1990-05-05</div>
+              <div style="font-size:13px">Wrestling Camp Set</div>
+            </div>
+          </div>
+          <div style="flex:1;padding:16px;overflow:hidden">
+            <div style="font-size:18px;font-weight:bold;margin-bottom:4px">Eagles Team Well Balanced</div>
+            <div style="font-size:12px;color:#888;margin-bottom:12px">1991-12-05 • The Gettysburg Times • ✅ Wrestling</div>
+            <div style="display:flex;gap:4px;margin-bottom:12px">
+              <span style="background:#e3f2fd;color:#1976d2;padding:2px 8px;border-radius:12px;font-size:10px">Dave McCollum</span>
+              <span style="background:#e3f2fd;color:#1976d2;padding:2px 8px;border-radius:12px;font-size:10px">Dan Christ</span>
+              <span style="background:#e8f5e9;color:#388e3c;padding:2px 8px;border-radius:12px;font-size:10px">Bermudian Springs</span>
+            </div>
+            <div style="font-size:13px;font-weight:500;margin-bottom:4px">Summary</div>
+            <div style="font-size:12px;color:#555;margin-bottom:12px">Preview of the 1991 Bermudian Springs Eagles wrestling season highlighting team balance and key wrestlers.</div>
+            <div style="font-size:13px;font-weight:500;margin-bottom:4px">Cleaned Text</div>
+            <div style="font-size:12px;color:#555;line-height:1.5">BY DAN CHRIST, Times Correspondent. Although Bermudian Springs is not a returning regional champion, don't worry for the Eagles; the team is well balanced. "The strength of our team is balance," McCollum said...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
